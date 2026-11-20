@@ -141,12 +141,18 @@ async function fromTCB() {
 // ---------------- DAM ----------------
 // The DAM portal's daily report is a POST form (division → district → upazila → market, price type, date)
 // whose dropdowns load over AJAX. Walk that chain for Dhaka district, then ask for retail (খুচরা) prices.
+// gov servers are slow at times: try a request up to 3 times
+async function retry(fn, what, n = 3) {
+  for (let i = 1; ; i++) {
+    try { return await fn() } catch (e) { if (i >= n) throw new Error(`${what}: ${e.message}`); log(`${what} attempt ${i} failed (${e.message}), retrying`); await new Promise((r) => setTimeout(r, 5000 * i)) }
+  }
+}
 const opts = (html) => [...html.matchAll(/<option[^>]*value=["']?([^"'>]+?)["']?\s*>([^<]*)</gi)].map((m) => [m[1].trim(), toLatin(m[2]).replace(/&nbsp;/g, ' ').trim()]).filter(([v]) => v && v !== '0')
 async function fromDAM() {
   const base = process.env.DAM_BASE || 'https://market.dam.gov.bd/'
   const page = base + 'market_daily_price_report'
   const UA = { 'user-agent': 'Mozilla/5.0 (thokar-chance-nai price bot; +https://github.com/bp9889/thokar-chance-nai)' }
-  const first = await fetch(page, { headers: UA, signal: AbortSignal.timeout(45000) })
+  const first = await retry(() => fetch(page, { headers: UA, signal: AbortSignal.timeout(90000) }), 'DAM page')
   const cookie = (first.headers.getSetCookie?.() || []).map((c) => c.split(';')[0]).join('; ')
   const html = await first.text()
   const token = html.match(/name="csrf_webspice_tkn"\s+value="([^"]+)"/)?.[1] || ''
@@ -154,7 +160,7 @@ async function fromDAM() {
   const refresh = async () => { const h = await (await fetch(page, { headers: { ...UA, cookie }, signal: AbortSignal.timeout(45000) })).text(); tok = h.match(/name="csrf_webspice_tkn"\s+value="([^"]+)"/)?.[1] || tok }
   const post = async (url, pairs) => {
     const body = new URLSearchParams([['csrf_webspice_tkn', tok], ...pairs])
-    const r = await fetch(url, { method: 'POST', body, headers: { ...UA, cookie, 'x-requested-with': 'XMLHttpRequest', 'content-type': 'application/x-www-form-urlencoded; charset=UTF-8', referer: page }, signal: AbortSignal.timeout(180000) })
+    const r = await retry(() => fetch(url, { method: 'POST', body, headers: { ...UA, cookie, 'x-requested-with': 'XMLHttpRequest', 'content-type': 'application/x-www-form-urlencoded; charset=UTF-8', referer: page }, signal: AbortSignal.timeout(180000) }), url.replace(base, 'DAM /'), 2)
     if (!r.ok) throw new Error(`${r.status} ${url}`)
     return r.text()
   }
