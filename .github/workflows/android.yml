@@ -31,6 +31,7 @@ jobs:
         run: |
           mkdir -p /tmp/apk && cp android/app/build/outputs/apk/release/*.apk /tmp/apk/app-release-unsigned.apk
           cd /tmp/apk
+          echo '{ "git": { "deploymentEnabled": false } }' > vercel.json   # this branch only holds the app file: no Vercel deploys
           git init -q -b android-build
           git config user.name "Bishan Paul" && git config user.email "228916683+bp9889@users.noreply.github.com"
           git add . && git commit -q -m "Unsigned app build from ${GITHUB_SHA}"
