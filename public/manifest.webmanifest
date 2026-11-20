@@ -1,0 +1,15 @@
+{
+  "name": "THOKAR চান্স NAI",
+  "short_name": "Thokar Chance Nai",
+  "description": "Ajker Dhaka bazar-er ashol dam: sobji, shak, fol ar moshla.",
+  "start_url": "/?source=pwa",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#C4161C",
+  "theme_color": "#C4161C",
+  "icons": [
+    { "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "/icons/maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

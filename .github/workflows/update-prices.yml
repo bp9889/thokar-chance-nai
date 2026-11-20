@@ -9,6 +9,9 @@ on:
       debug:
         description: 'Print source page details'
         default: '0'
+      dry:
+        description: 'Do not write or commit'
+        default: '0'
 
 permissions:
   contents: write
@@ -45,6 +48,7 @@ jobs:
       - name: Fetch prices
         env:
           DEBUG: ${{ inputs.debug || '0' }}
+          DRY: ${{ inputs.dry || '0' }}
         run: node scripts/update-prices.mjs
       - name: Commit if changed
         run: |

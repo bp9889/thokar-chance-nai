@@ -1,0 +1,13 @@
+<resources>
+    <style name="Theme.Thokar.Launch" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:windowSplashScreenBackground">@color/red</item>
+        <item name="android:windowSplashScreenAnimatedIcon">@drawable/potato_splash</item>
+        <item name="android:statusBarColor">@color/red</item>
+        <item name="android:navigationBarColor">@color/red</item>
+    </style>
+    <style name="Theme.Thokar" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:windowBackground">@color/red</item>
+        <item name="android:statusBarColor">@color/red</item>
+        <item name="android:navigationBarColor">@color/red</item>
+    </style>
+</resources>
