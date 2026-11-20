@@ -27,10 +27,25 @@ jobs:
         with:
           node-version: 24
       - run: npm install --no-save --no-audit --no-fund @e965/xlsx@0.20.3
+      - name: Complete government sites' certificate chains
+        # tcb.gov.bd and dam.gov.bd don't send their intermediate certificate, so
+        # fetch it from the address the server certificate itself names (AIA) and trust it.
+        shell: bash
+        run: |
+          set +e
+          : > /tmp/extra-ca.pem
+          for h in tcb.gov.bd dam.gov.bd; do
+            echo | openssl s_client -connect $h:443 -servername $h 2>/dev/null | openssl x509 > /tmp/leaf.pem 2>/dev/null
+            AIA=$(openssl x509 -in /tmp/leaf.pem -noout -text 2>/dev/null | grep -oE "CA Issuers - URI:[^ ]+" | head -1 | sed 's/CA Issuers - URI://')
+            [ -n "$AIA" ] || continue
+            curl -sS --max-time 20 "$AIA" -o /tmp/i.der && (openssl x509 -inform DER -in /tmp/i.der 2>/dev/null || cat /tmp/i.der) >> /tmp/extra-ca.pem
+            echo "$h -> $AIA"
+          done
+          echo "NODE_EXTRA_CA_CERTS=/tmp/extra-ca.pem" >> $GITHUB_ENV
       - name: Fetch prices
         env:
           DEBUG: ${{ inputs.debug || '0' }}
-        run: node --use-system-ca scripts/update-prices.mjs
+        run: node scripts/update-prices.mjs
       - name: Commit if changed
         run: |
           if git diff --quiet public/prices.json; then echo "No changes"; exit 0; fi

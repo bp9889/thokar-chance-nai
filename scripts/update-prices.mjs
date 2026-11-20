@@ -6,7 +6,7 @@
 //   TCB  - Trading Corporation of Bangladesh, daily retail market prices (Dhaka), Excel/PDF per working day
 //   DAM  - Department of Agricultural Marketing, market daily price report (Dhaka markets)
 //
-// Run: node --use-system-ca scripts/update-prices.mjs   (TCB serves an incomplete TLS chain)
+// Run: node scripts/update-prices.mjs  (in CI the workflow first completes TCB/DAM's incomplete TLS chains via NODE_EXTRA_CA_CERTS)
 
 import fs from 'node:fs'
 import path from 'node:path'
@@ -130,7 +130,7 @@ async function fromTCB() {
   const flat = rows.map((r) => r[0]).join(' ') + ' ' + xl
   const dm = toLatin(flat).match(/(\d{1,2})[./-](\d{1,2})[./-](20\d\d)/)
   const date = dm ? `${dm[3]}-${dm[2].padStart(2, '0')}-${dm[1].padStart(2, '0')}` : today()
-  dbg('TCB sample rows', rows.slice(0, 15))
+  dbg('TCB file', xl, 'rows:', rows.map((r) => `${r[0]} ${r[1].slice(0, 4).join('/')}`).join(' | '))
   return { name: 'TCB', url: xl, date, rows }
 }
 
@@ -169,7 +169,7 @@ async function main() {
   const data = JSON.parse(fs.readFileSync(FILE, 'utf8'))
   const results = []
   for (const fn of [fromTCB, fromDAM]) {
-    try { const r = await fn(); results.push(r); log(`${r.name}: ${r.rows.length} rows, report date ${r.date}`) } catch (e) { log(`${fn.name} failed: ${e.message}`) }
+    try { const r = await fn(); results.push(r); log(`${r.name}: ${r.rows.length} rows, report date ${r.date}`) } catch (e) { log(`${fn.name} failed: ${e.message}${e.cause ? ' (' + (e.cause.code || e.cause.message) + ')' : ''}`) }
   }
   let changed = 0
   const touched = []
@@ -185,11 +185,15 @@ async function main() {
       touched.push(`${id}=${got.min}-${got.max} (${src.name})`)
     }
   }
-  for (const src of results) data.sources[src.name] = { url: src.url, date: src.date }
-  if (results.length) data.updated = today()
-  log(`updated ${touched.length} items:`, touched.join(', '))
+  for (const src of results) {
+    if (data.sources[src.name]?.date !== src.date) changed++
+    data.sources[src.name] = { url: src.url, date: src.date }
+  }
+  log(`matched ${touched.length} items:`, touched.join(', '))
+  if (!changed) { log('no new report or price changes; prices.json left as is'); return }
+  data.updated = today()
   fs.writeFileSync(FILE, JSON.stringify(data, null, 1) + '\n')
-  log(changed ? `${changed} changes written` : 'no price changes')
+  log(`${changed} changes written`)
   if (!results.length) process.exitCode = 0 // keep last good data; the site shows dates
 }
 
