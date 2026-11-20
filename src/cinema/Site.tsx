@@ -5,7 +5,7 @@ import { cn } from '@/lib/utils'
 import { BN, POSTER, extrude, halftone, star, KashemChat, ListPage, type ChatSkin, type ListSkin, type Page } from './common'
 import { FX_MS, PageFx } from './transitions'
 import { ModeSwitch, Sky, THEME_CSS, useMode } from './theme'
-import { AppCard, BudgetMode, OfflineNote, SeasonCalendar, ShareList, ShostaBoard, ThokseNaki, Trend } from './features'
+import { AppCard, BudgetMode, ListControl, ListFab, OfflineNote, SeasonCalendar, ShareList, ShostaBoard, ThokseNaki, Trend } from './features'
 
 const chat: ChatSkin = {
   wrap: 'bg-[#F4E3C1] text-[#1A0B07] shadow-[8px_8px_0_var(--deep)]', seller: 'bg-white text-[#1A0B07] ring-2 ring-[#1A0B07]', me: 'bg-[#C4161C] text-[#FFF1D6] ring-2 ring-[#1A0B07]',
@@ -97,6 +97,9 @@ export default function Site() {
         .pw-star{animation:pw-spin 700ms var(--ease-out) 900ms both}
         .pw-rays{animation:pw-rays 70s linear infinite}
         @media (hover:hover) and (pointer:fine){.pw-wig:hover{animation:pw-wiggle 300ms ease}}
+        .np{background:#C4161C;color:#FFF1D6} .np .np-kicker,.np .np-price,.np .np-tick{color:#FFD21F}
+        .np[data-np="orange"]{background:#FF9F1A;color:#1A0B07} .np[data-np="orange"] .np-kicker{color:#C4161C} .np[data-np="orange"] .np-tick{color:#1A0B07} .np[data-np="orange"] .np-price{color:#FFF6E0}
+        .np[data-off]{background:#3A3A3A;color:#FFF1D6}
         .pw-idx{transition:translate 200ms var(--ease-out), color 200ms ease}
         .pw-idx[aria-current="true"]{translate:12px 0;color:var(--hi)}
         /* Triggered reveals: fully hidden until scrolled into view, then play once */
@@ -208,7 +211,7 @@ export default function Site() {
                         <div className="pw-slap flex items-center gap-4 pb-4 md:hidden" style={{ animationDuration: '320ms' }}>
                           <img src={i.img} alt="" className="size-16 -rotate-6" />
                           <div className="min-w-0 flex-1"><p>{i.name} · {i.bn}</p><p className="text-sm opacity-75">{i.per}{i.available && ` · ${i.fresh.label}`}</p></div>
-                          {i.available && <button type="button" onClick={() => b.add(i.id)} className="kc-press h-11 shrink-0 cursor-pointer rounded-[4px] bg-[#FFD21F] px-4 font-bold text-[#1A0B07]">{i.inList ? 'Aro din' : '+ Add'}</button>}
+                          {i.available && <ListControl b={b} id={i.id} size="sm" tone="row" />}
                         </div>
                       )}
                     </li>
@@ -216,19 +219,19 @@ export default function Site() {
                 </ul>
                 <div className="hidden md:block">
                   <div className="md:sticky md:top-6">
-                    <div key={cur.id} className="pw-slap relative overflow-hidden rounded-[6px] p-8 text-[#FFF1D6] shadow-[10px_10px_0_var(--deep)]" style={{ animationDuration: '420ms', background: cur.available ? '#C4161C' : '#3A3A3A' }}>
+                    <div key={cur.id} className="np pw-slap relative overflow-hidden rounded-[6px] p-8 shadow-[10px_10px_0_var(--deep)]" data-off={!cur.available || undefined} style={{ animationDuration: '420ms' }}>
                       <div aria-hidden className="absolute inset-0" style={halftone} />
-                      <p className="relative" style={{ fontFamily: POSTER, color: '#FFD21F' }}>{cur.available ? 'Now showing' : 'Coming soon'}</p>
+                      <p className="np-kicker relative" style={{ fontFamily: POSTER }}>{cur.available ? 'Now showing' : 'Coming soon'}</p>
                       <img src={cur.img} alt="" className={cn('relative mx-auto my-4 size-56 -rotate-6 drop-shadow-[8px_10px_0_rgba(26,11,7,.8)]', !cur.available && 'grayscale')} />
                       <p className="relative text-5xl leading-none" style={{ fontFamily: POSTER }}>{cur.local}</p>
                       <p className="relative mt-1 text-xl">{cur.name} · {cur.bn}</p>
                       <div className="relative mt-5 flex flex-wrap items-end justify-between gap-4">
                         <div>
-                          <p className="text-[3rem] leading-none font-extrabold text-[#FFD21F]" style={{ fontVariationSettings: '"wdth" 75', WebkitTextStroke: '1.5px #1A0B07' }}>{cur.available ? cur.price : 'Ekhon season na'}</p>
+                          <p className="np-price text-[3rem] leading-none font-extrabold" style={{ fontVariationSettings: '"wdth" 75', WebkitTextStroke: '1.5px #1A0B07' }}>{cur.available ? cur.price : 'Ekhon season na'}</p>
                           <p>{cur.per}{cur.available && <> · <span className={cn(cur.fresh.stale && 'rounded-[3px] bg-[#FFD21F] px-1.5 font-bold text-[#1A0B07]')}>{cur.fresh.label}</span></>}</p>
                           <p className="mt-1 flex flex-wrap gap-1.5"><Trend i={cur} /><Trend i={cur} vs="month" /></p>
                         </div>
-                        {cur.available && <button type="button" onClick={() => b.add(cur.id)} className="kc-press pw-wig h-12 cursor-pointer rounded-[4px] bg-[#FFD21F] px-5 text-lg font-bold text-[#1A0B07] shadow-[3px_3px_0_#1A0B07]">{cur.inList ? 'In list, aro din' : '+ Add to list'}</button>}
+                        {cur.available && <ListControl b={b} id={cur.id} />}
                       </div>
                     </div>
                   </div>
@@ -242,6 +245,7 @@ export default function Site() {
         <div className="relative z-[1]"><ListPage b={b} skin={list} goHome={() => go('home')} share={<ShareList b={b} />} extra={<BudgetMode b={b} />} /></div>
       )}
 
+      {page === 'home' && <ListFab b={b} open={() => go('list')} />}
       <footer className="relative z-[1] mx-auto max-w-[1180px] px-4 pb-28 md:px-6">
         <AppCard />
         <div className="flex flex-col gap-4 border-t border-[var(--line)] pt-8 md:flex-row md:items-end md:justify-between">

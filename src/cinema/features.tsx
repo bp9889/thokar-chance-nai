@@ -346,3 +346,62 @@ export function OfflineNote({ updated }: { updated: string | null }) {
   if (online) return null
   return <p role="status" className="fixed inset-x-0 top-0 z-40 bg-[#1A0B07] py-2 text-center text-sm text-[#FFD21F]">Net nai. Shesh save kora dam dekhacchi{updated ? ` (${updated})` : ''}.</p>
 }
+
+/* ---------- Amar list: add button with a stepper, fly-to-list, floating list button ---------- */
+/** The added item's picture flies in an arc into the floating list button, which then bumps. */
+export function flyToList(from: HTMLElement | null, img: string) {
+  const fab = document.getElementById('list-fab')
+  if (!from || !fab || matchMedia('(prefers-reduced-motion: reduce)').matches) return
+  const a = from.getBoundingClientRect(), z = fab.getBoundingClientRect()
+  const x0 = a.left + a.width / 2, y0 = a.top + a.height / 2
+  const dx = z.left + 30 - x0, dy = z.top + z.height / 2 - y0
+  const el = document.createElement('img')
+  el.src = img; el.alt = ''
+  Object.assign(el.style, { position: 'fixed', left: `${x0 - 28}px`, top: `${y0 - 28}px`, width: '56px', height: '56px', zIndex: '60', pointerEvents: 'none', filter: 'drop-shadow(3px 4px 0 rgba(26,11,7,.6))' })
+  document.body.appendChild(el)
+  el.animate([
+    { transform: 'translate(0,0) scale(1) rotate(0deg)' },
+    { transform: `translate(${dx * 0.45}px, ${Math.min(dy * 0.45, 0) - 90}px) scale(1.1) rotate(-25deg)`, offset: 0.45 },
+    { transform: `translate(${dx}px, ${dy}px) scale(.35) rotate(-60deg)`, opacity: 0.4 },
+  ], { duration: 640, easing: 'cubic-bezier(0.77, 0, 0.175, 1)' }).finished.then(() => {
+    el.remove()
+    fab.animate([{ transform: 'scale(1)' }, { transform: 'scale(1.12) rotate(-3deg)' }, { transform: 'scale(1)' }], { duration: 320, easing: 'cubic-bezier(0.23, 1, 0.32, 1)' })
+  }).catch(() => el.remove())
+}
+
+/** "+ List e rakhun"; once added, a tick and a − qty + stepper so it's clear it's in the list. */
+export function ListControl({ b, id, size = 'lg', tone = 'poster' }: { b: Bazar; id: string; size?: 'lg' | 'sm'; tone?: 'poster' | 'row' }) {
+  const i = BY[id]
+  const n = b.raw[id] || 0
+  const h = size === 'lg' ? 'h-12' : 'h-11'
+  if (!n) return (
+    <button type="button" onClick={(e) => { b.add(id); flyToList(e.currentTarget, IMG[id]) }}
+      className={cn('kc-press pw-wig shrink-0 cursor-pointer rounded-[4px] bg-[#FFD21F] px-5 font-bold text-[#1A0B07] shadow-[3px_3px_0_#1A0B07]', h, size === 'lg' ? 'text-lg' : 'px-4')}>+ List e rakhun</button>
+  )
+  return (
+    <div className="flex shrink-0 flex-col items-end gap-1">
+      <span className={cn('kc-stamp text-sm font-bold', tone === 'poster' ? 'np-tick' : 'text-[var(--hi)]')}>✓ List e ache</span>
+      <div className={cn('flex items-center rounded-full bg-[#FFD21F] p-1 text-[#1A0B07] shadow-[3px_3px_0_#1A0B07]', h)}>
+        <button type="button" onClick={() => b.dec(id)} aria-label={`Less ${i.local}`} className="kc-press grid aspect-square h-full cursor-pointer place-items-center rounded-full bg-[#1A0B07]/10 text-xl font-bold">−</button>
+        <span key={n} className="kc-stamp min-w-[4.5rem] px-2 text-center font-bold tabular-nums" aria-live="polite">{qtyText(i, n)}</span>
+        <button type="button" onClick={(e) => { b.add(id); flyToList(e.currentTarget, IMG[id]) }} aria-label={`More ${i.local}`} className="kc-press grid aspect-square h-full cursor-pointer place-items-center rounded-full bg-[#1A0B07] text-xl font-bold text-[#FFD21F]">+</button>
+      </div>
+    </div>
+  )
+}
+
+/** Floating button, always in reach: how many things are in the list and the expected total. */
+export function ListFab({ b, open }: { b: Bazar; open: () => void }) {
+  const count = b.list.rows.length
+  return (
+    <button id="list-fab" type="button" onClick={open} aria-label={`Amar list: ${count} items, ${b.list.total}`}
+      className="kc-press fixed right-4 z-30 flex h-14 cursor-pointer items-center gap-3 rounded-full bg-[#FFD21F] pr-5 pl-2 text-[#1A0B07] shadow-[4px_4px_0_#1A0B07] ring-2 ring-[#1A0B07]"
+      style={{ bottom: 'max(16px, env(safe-area-inset-bottom))' }}>
+      <span className="relative grid size-10 place-items-center rounded-full bg-[#C4161C]">
+        <svg viewBox="0 0 32 32" className="size-6" aria-hidden><path d="M11 11V9a5 5 0 0 1 10 0v2" fill="none" stroke="#FFD21F" strokeWidth="2.6" strokeLinecap="round" /><path d="M6 11h20l-2 16H8z" fill="#FFD21F" /><path d="M9 16h14M10 21h12" stroke="#C4161C" strokeWidth="1.6" strokeDasharray="2 2" /></svg>
+        <span key={count} className="kc-stamp absolute -top-1.5 -right-1.5 grid size-6 place-items-center rounded-full bg-[#1A0B07] text-xs font-bold text-[#FFD21F]">{count}</span>
+      </span>
+      <span className="text-left leading-tight"><span className="block font-bold">Amar list</span><span className="block text-sm tabular-nums">{count ? b.list.total : 'Khali'}</span></span>
+    </button>
+  )
+}
