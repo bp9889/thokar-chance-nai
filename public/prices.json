@@ -9,11 +9,11 @@
  },
  "items": {
   "potato": {
-   "min": 28,
+   "min": 25,
    "max": 30,
    "unit": "kg",
-   "date": "2026-11-14",
-   "source": "news"
+   "date": "2026-11-19",
+   "source": "TCB"
   },
   "newpotato": {
    "min": 140,
@@ -23,11 +23,11 @@
    "source": "estimate"
   },
   "onion": {
-   "min": 40,
+   "min": 45,
    "max": 55,
    "unit": "kg",
-   "date": "2026-11-14",
-   "source": "news"
+   "date": "2026-11-19",
+   "source": "TCB"
   },
   "tomato": {
    "min": 80,
@@ -58,11 +58,11 @@
    "source": "TCB"
   },
   "chili": {
-   "min": 100,
-   "max": 140,
+   "min": 60,
+   "max": 120,
    "unit": "kg",
-   "date": "2026-11-14",
-   "source": "news"
+   "date": "2026-11-19",
+   "source": "TCB"
   },
   "shim": {
    "min": 50,
