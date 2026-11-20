@@ -4,7 +4,9 @@ import { IMG, ITEMS, applyLive, type Live } from '@/lib/data'
 import { cn } from '@/lib/utils'
 import { BN, POSTER, extrude, halftone, star, KashemChat, ListPage, type ChatSkin, type ListSkin, type Page } from './common'
 import { FX_MS, PageFx } from './transitions'
-import { DemoPicker, ModeSwitch, Sides, THEME_CSS, useMode, type Demo } from './theme'
+import { ModeSwitch, Sides, THEME_CSS, useMode, type BoardV, type Demo } from './theme'
+import type { DayV } from './desh'
+import { BOARD_CSS, ItemDialog, JhuriBoard, PosterWall, SeatBoard, seatNo } from './boards'
 
 const chat: ChatSkin = {
   wrap: 'bg-[#F4E3C1] text-[#1A0B07] shadow-[8px_8px_0_var(--deep)]', seller: 'bg-white text-[#1A0B07] ring-2 ring-[#1A0B07]', me: 'bg-[#C4161C] text-[#FFF1D6] ring-2 ring-[#1A0B07]',
@@ -61,7 +63,8 @@ function Caution({ className, updated }: { className?: string; updated: string |
   )
 }
 
-export default function Site({ demo = 1, setDemo }: { demo?: Demo; setDemo?: (d: Demo) => void }) {
+export default function Site({ demo = 3, day = 'tar', board = 'seat', picker }: { demo?: Demo; day?: DayV; board?: BoardV; picker?: React.ReactNode }) {
+  const [dlg, setDlg] = useState<string | null>(null)
   const { mode, toggle } = useMode()
   const [ver, setVer] = useState(0)
   const [updated, setUpdated] = useState<string | null>(null)
@@ -71,16 +74,16 @@ export default function Site({ demo = 1, setDemo }: { demo?: Demo; setDemo?: (d:
   const b = useBazar(ver)
   const { page, phase, go } = usePage()
   const [sel, setSel] = useState<string>('potato')
-  useReveal(`${page}-${b.cat}-${b.q}`)
+  useReveal(`${page}-${b.cat}-${b.q}-${board}`)
   const cur = b.board.find((i) => i.id === sel) ?? b.board[0]
   const pick = (id: string) => { b.setQ(''); b.setCat('all'); setSel(id); document.getElementById('now-cholche')?.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' }) }
   const fruitCount = ITEMS.filter((i) => i.cat === 'fruit').length, vegCount = ITEMS.length - fruitCount
 
   return (
     <div className="tcn relative min-h-[100dvh] overflow-x-clip" data-d={demo} data-m={mode} style={{ fontFamily: BN }}>
-      <style>{THEME_CSS}</style>
-      <Sides demo={demo} ver={ver} onPick={pick} />
-      {setDemo && <DemoPicker demo={demo} set={setDemo} />}
+      <style>{THEME_CSS + BOARD_CSS}</style>
+      <Sides demo={demo} ver={ver} onPick={pick} day={day} />
+      {picker}
       <style>{`
         @keyframes pw-slap{0%{opacity:0;scale:1.12;rotate:3deg}60%{opacity:1;scale:.985;rotate:-.6deg}100%{opacity:1;scale:1;rotate:0deg}}
         @keyframes pw-shine{0%{translate:-120% 0;opacity:1}85%{opacity:1}100%{translate:420% 0;opacity:0}}
@@ -185,7 +188,11 @@ export default function Site({ demo = 1, setDemo }: { demo?: Demo; setDemo?: (d:
               </div>
             </div>
             {b.board.length === 0 && <p className="mt-8 text-xl">"{b.q}" naam e kono show nai. Try alu ba malta.</p>}
-            {cur && (
+            {board === 'seat' && <SeatBoard b={b} sel={sel} setSel={setSel} open={setDlg} />}
+            {board === 'poster' && <PosterWall b={b} open={setDlg} />}
+            {board === 'jhuri' && <JhuriBoard b={b} open={setDlg} />}
+            <ItemDialog i={b.board.find((i) => i.id === dlg) ?? null} b={b} seat={board === 'seat' && dlg ? seatNo(b.board, dlg) : undefined} onClose={() => setDlg(null)} />
+            {board === 'list' && cur && (
               <div className="mt-10 grid gap-8 md:grid-cols-[1fr_1.05fr]">
                 <ul key={`${b.cat}-${b.q}`} className="rv rv-rows" aria-label="Today's items">
                   {b.board.map((i, k) => (

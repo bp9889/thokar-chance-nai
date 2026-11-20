@@ -78,6 +78,16 @@ const MATCH = {
   khejur: { any: ['খেজুর'] },
 }
 
+/** The row for an item, or null. */
+function findRow(rows, id) {
+  const m = MATCH[id]
+  for (const pat of m.any) {
+    const p = norm(pat)
+    const row = rows.find(([name]) => name.length < 40 && name.includes(p) && !(m.skip || []).some((s) => name.includes(norm(s))))
+    if (row) return row
+  }
+  return null
+}
 /** Find an item in a list of [name, numbers[]] rows. Returns {min,max} or null. */
 function pick(rows, id) {
   const m = MATCH[id]
@@ -257,6 +267,7 @@ async function main() {
     data.sources[src.name] = { url: src.url, date: src.date }
   }
   log(`matched ${touched.length} items:`, touched.join(', '))
+  for (const src of results) for (const id of Object.keys(MATCH)) { const row = findRow(src.rows, id); if (row) dbg(`${src.name} ${id} full:`, row[0], JSON.stringify(row[1])) }
   if (!changed) { log('no new report or price changes; prices.json left as is'); return }
   data.updated = today()
   if (DRY) { log(`dry run: ${changed} changes not written`); return }

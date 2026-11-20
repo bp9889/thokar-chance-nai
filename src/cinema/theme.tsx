@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { IMG, ITEMS, tk, UNIT, freshness } from '@/lib/data'
 import { cn } from '@/lib/utils'
 import { POSTER } from './common'
+import { DESH_CSS, DeshSides, type DayV } from './desh'
 
 export type Mode = 'day' | 'night'
 export type Demo = 1 | 2 | 3
@@ -16,7 +17,7 @@ export function useMode() {
 }
 
 /* Page tokens per demo and mode. The poster, chat and list cards keep their printed colours. */
-export const THEME_CSS = `
+export const THEME_CSS = DESH_CSS + `
 .tcn { --gut: max(0px, calc((100vw - 1180px) / 2)); background-color: var(--pg); color: var(--ink); transition: background-color 600ms ease, color 400ms ease; }
 .tcn[data-d="1"][data-m="night"] { --pg:#150A0B; --ink:#F4E3C1; --soft:#D8C3AA; --deep:#000; --chip:#2B1214; --chip-ink:#F4E3C1; --line:rgba(244,227,193,.16); --hover:rgba(255,255,255,.08); --hi:#FFD21F; --brand:#FFD21F; }
 .tcn[data-d="1"][data-m="day"]   { --pg:#F7E2C0; --ink:#2A0E0A; --soft:#6E3B28; --deep:#7A1013; --chip:#2A0E0A; --chip-ink:#F7E2C0; --line:rgba(42,14,10,.16); --hover:rgba(42,14,10,.07); --hi:#C4161C; --brand:#C4161C; }
@@ -109,14 +110,6 @@ export const THEME_CSS = `
 .cloud::before { left: 18%; width: 46%; aspect-ratio: 1; } .cloud::after { right: 16%; width: 34%; aspect-ratio: 1; }
 .tcn[data-m="night"] .cloud { opacity: .07; }
 @keyframes drift { from { transform: translateX(-30vw); } to { transform: translateX(130vw); } }
-.ghuri { position: fixed; z-index: 0; pointer-events: none; transition: opacity 800ms ease; }
-.ghuri svg { display: block; overflow: visible; transform-origin: 50% 28%; animation: sway var(--sw, 6s) ease-in-out infinite; }
-@keyframes sway { 0%, 100% { transform: rotate(-7deg) translate(0, 0); } 50% { transform: rotate(6deg) translate(8px, -14px); } }
-.tcn[data-m="night"] .ghuri { opacity: 0; }
-@supports (animation-timeline: scroll()) { @media (prefers-reduced-motion: no-preference) {
-  .ghuri { animation: para linear both; animation-timeline: scroll(root); }
-  @keyframes para { to { transform: translateY(var(--py)); } }
-} }
 .fanush { position: fixed; bottom: -90px; z-index: 0; pointer-events: none; width: 30px; height: 40px; opacity: 0; transition: opacity 900ms ease;
   border-radius: 46% 46% 22% 22% / 55% 55% 18% 18%; background: radial-gradient(circle at 50% 78%, #FFF1B8, #FFB13D 42%, #E0601E 80%); box-shadow: 0 0 22px 6px rgba(255,150,40,.42), 0 0 60px 10px rgba(255,120,30,.16); }
 .fanush::after { content: ""; position: absolute; bottom: -5px; left: 50%; width: 7px; height: 9px; translate: -50% 0; border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%; background: #FFF6C8; box-shadow: 0 0 8px 3px rgba(255,220,120,.9); }
@@ -124,13 +117,7 @@ export const THEME_CSS = `
 @media (prefers-reduced-motion: no-preference) { .fanush { animation: rise var(--t) linear var(--dl) infinite; } }
 @media (prefers-reduced-motion: reduce) { .fanush { transform: translateY(calc(var(--ry) * -1)); } }
 @keyframes rise { 0% { transform: translate(0, 0) rotate(-3deg); } 50% { transform: translate(calc(var(--dx) * .5), -62vh) rotate(3deg); } 100% { transform: translate(var(--dx), -125vh) rotate(-2deg); } }
-.flock { position: absolute; display: flex; gap: 14px; transition: opacity 900ms ease; animation: fly var(--t) linear var(--dl) infinite; }
-.flock i { display: block; width: 22px; height: 10px; animation: flap .5s ease-in-out infinite alternate; background: no-repeat center / contain url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 10'%3E%3Cpath d='M1 7Q6 0 12 7Q18 0 23 7' fill='none' stroke='%2310233A' stroke-width='2.2' stroke-linecap='round'/%3E%3C/svg%3E"); }
-.flock i:nth-child(2) { margin-top: 10px; animation-delay: .15s; } .flock i:nth-child(3) { margin-top: -6px; animation-delay: .3s; }
-.tcn[data-m="night"] .flock { opacity: 0; }
-@keyframes fly { from { transform: translateX(-12vw); } to { transform: translateX(112vw); } }
-@keyframes flap { to { transform: scaleY(.35); } }
-@media (prefers-reduced-motion: reduce) { .cloud, .flock, .flock i, .ghuri svg, .tcn[data-m="night"] .sky-star { animation: none; } .flock { left: 30vw; } }
+@media (prefers-reduced-motion: reduce) { .cloud, .tcn[data-m="night"] .sky-star { animation: none; } }
 
 /* sun/moon dial */
 .dial { position: relative; width: 44px; height: 44px; border-radius: 50%; overflow: hidden; box-shadow: 3px 3px 0 #1A0B07, inset 0 0 0 2px #1A0B07; transition: background-color 500ms ease; background: #86CDEE; }
@@ -143,7 +130,7 @@ export const THEME_CSS = `
 .dial::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 11px; background: #1F7A3A; box-shadow: 0 -2px 0 #1A0B07; }
 
 /* sides only where there's room */
-@media (max-width: 1339px) { .tags, .ghuri, .fanush { display: none; } }
+@media (max-width: 1339px) { .tags, .fanush { display: none; } }
 @media (max-width: 1199px) { .sky-sun, .sky-moon { display: none; } }
 `
 
@@ -203,29 +190,11 @@ function Tags({ ver, onPick }: { ver: number; onPick: (id: string) => void }) {
   return <><Col items={live.slice(0, half)} side="l" /><Col items={live.slice(half)} side="r" /></>
 }
 
-const STARS = Array.from({ length: 46 }, (_, k) => ({ x: (k * 37.7) % 100, y: (k * 23.3) % 92, d: (k % 7) * 0.45 }))
-/* Ghuri (kites, Shakrain-style) by day; fanush (sky lanterns) by night. */
-const KITES: { side: 'l' | 'r'; top: string; w: number; a: string; c: string; py: string; sw: string; lean: number }[] = [
-  { side: 'l', top: '22%', w: 92, a: '#C4161C', c: '#FFD21F', py: '-160px', sw: '5.5s', lean: -14 },
-  { side: 'l', top: '58%', w: 70, a: '#1F7A3A', c: '#F4E3C1', py: '-300px', sw: '7s', lean: 10 },
-  { side: 'r', top: '30%', w: 84, a: '#2C5BD6', c: '#FF9F1A', py: '-240px', sw: '6.2s', lean: 12 },
-  { side: 'r', top: '66%', w: 64, a: '#7A2BB5', c: '#FFD21F', py: '-120px', sw: '5s', lean: -10 },
-]
-function Kite({ a, c, lean }: { a: string; c: string; lean: number }) {
-  return (
-    <svg viewBox="0 0 100 200" style={{ rotate: `${lean}deg` }}>
-      <path d={`M50 64 L${lean < 0 ? -260 : 360} 1400`} stroke="rgba(16,35,58,.35)" strokeWidth="1.2" fill="none" />
-      <path d="M50 108 q-14 18 0 34 t0 34 t0 22" stroke={a} strokeWidth="3" fill="none" strokeLinecap="round" />
-      {[128, 158, 186].map((y) => <path key={y} d={`M42 ${y - 6} L58 ${y + 6} M58 ${y - 6} L42 ${y + 6}`} stroke={c} strokeWidth="4" strokeLinecap="round" />)}
-      <path d="M50 0 L90 50 L50 110 Z" fill={c} /><path d="M50 0 L10 50 L50 110 Z" fill={a} />
-      <path d="M50 0 L90 50 L50 110 L10 50 Z" fill="none" stroke="#10233A" strokeWidth="2.5" strokeLinejoin="round" />
-      <path d="M50 2 V108 M12 50 Q50 34 88 50" stroke="#10233A" strokeWidth="2" fill="none" />
-      <circle cx="50" cy="50" r="9" fill={a === '#C4161C' ? '#1F7A3A' : '#C4161C'} stroke="#10233A" strokeWidth="2" />
-    </svg>
-  )
-}
+const rnd = (n: number) => { const x = Math.sin(n * 12.9898) * 43758.5453; return x - Math.floor(x) }
+const STARS = Array.from({ length: 46 }, (_, k) => ({ x: rnd(k + 1) * 100, y: rnd(k + 101) * 92, d: rnd(k + 201) * 3 }))
+/* Fanush (sky lanterns) rise at night. */
 const FANUSH = Array.from({ length: 12 }, (_, k) => ({ side: k % 2 ? 'r' : 'l', off: ((k * 29) % 70) + 15, t: 26 + ((k * 7) % 14), dl: -((k * 4.3) % 34), dx: ((k * 13) % 50) - 25, ry: 15 + ((k * 23) % 70), s: 0.7 + ((k * 3) % 5) / 10 }))
-function Sky() {
+function Sky({ day }: { day: DayV }) {
   return (
     <div aria-hidden>
       <div className="sky">
@@ -235,14 +204,8 @@ function Sky() {
         <div className="cloud" style={{ top: '9%', width: 150, animationDelay: '-10s' }} />
         <div className="cloud" style={{ top: '38%', width: 110, animationDelay: '-42s', animationDuration: '95s' }} />
         <div className="cloud" style={{ top: '70%', width: 170, animationDelay: '-25s', animationDuration: '120s' }} />
-        <div className="flock" style={{ top: '17%', '--t': '46s', '--dl': '-8s' } as React.CSSProperties}><i /><i /><i /></div>
-        <div className="flock" style={{ top: '48%', '--t': '64s', '--dl': '-40s' } as React.CSSProperties}><i /><i /></div>
       </div>
-      {KITES.map((k, i) => (
-        <div key={i} className="ghuri" style={{ top: k.top, width: k.w, [k.side === 'l' ? 'left' : 'right']: `calc(var(--gut) / 2 - ${k.w / 2}px)`, '--py': k.py } as React.CSSProperties}>
-          <div style={{ '--sw': k.sw } as React.CSSProperties}><Kite a={k.a} c={k.c} lean={k.lean} /></div>
-        </div>
-      ))}
+      <DeshSides v={day} />
       {FANUSH.map((f, i) => (
         <i key={i} className="fanush" style={{ [f.side === 'l' ? 'left' : 'right']: `calc(var(--gut) * ${f.off / 100})`, scale: f.s, '--t': `${f.t}s`, '--dl': `${f.dl}s`, '--dx': `${f.dx}px`, '--ry': `${f.ry}vh` } as React.CSSProperties} />
       ))}
@@ -250,22 +213,28 @@ function Sky() {
   )
 }
 
-export function Sides({ demo, ver, onPick }: { demo: Demo; ver: number; onPick: (id: string) => void }) {
+export function Sides({ demo, ver, onPick, day = 'tar' }: { demo: Demo; ver: number; onPick: (id: string) => void; day?: DayV }) {
   if (demo === 1) return <Curtains />
   if (demo === 2) return <Tags ver={ver} onPick={onPick} />
-  return <Sky />
+  return <Sky day={day} />
 }
 
-/** Demo picker, only in demo builds. */
-export function DemoPicker({ demo, set }: { demo: Demo; set: (d: Demo) => void }) {
-  return (
-    <div role="group" aria-label="Demo" className="fixed bottom-4 left-1/2 z-50 flex -translate-x-1/2 gap-1 rounded-full bg-[#1A0B07] p-1 text-[#F4E3C1] shadow-[0_10px_30px_-10px_rgba(0,0,0,.6)]">
-      {([1, 2, 3] as Demo[]).map((d) => (
-        <button key={d} type="button" aria-pressed={demo === d} onClick={() => set(d)}
-          className={cn('h-10 cursor-pointer rounded-full px-3 text-sm font-bold whitespace-nowrap sm:px-4 transition-colors duration-200', demo === d ? 'bg-[#FFD21F] text-[#1A0B07]' : 'hover:bg-white/10')}>
-          {d === 1 ? 'Hall-er porda' : d === 2 ? 'Damer tag' : 'Akash'}
-        </button>
+export type BoardV = 'list' | 'seat' | 'poster' | 'jhuri'
+/** Demo picker, only in demo builds: day sky + item section. */
+export function DemoPicker({ day, setDay, board, setBoard }: { day: DayV; setDay: (d: DayV) => void; board: BoardV; setBoard: (b: BoardV) => void }) {
+  const Group = <T extends string>({ label, opts, v, set }: { label: string; opts: [T, string][]; v: T; set: (x: T) => void }) => (
+    <div role="group" aria-label={label} className="flex items-center gap-1">
+      <span className="px-2 text-xs opacity-70">{label}</span>
+      {opts.map(([id, name]) => (
+        <button key={id} type="button" aria-pressed={v === id} onClick={() => set(id)}
+          className={cn('h-9 cursor-pointer rounded-full px-3 text-sm font-bold whitespace-nowrap transition-colors duration-200', v === id ? 'bg-[#FFD21F] text-[#1A0B07]' : 'hover:bg-white/10')}>{name}</button>
       ))}
+    </div>
+  )
+  return (
+    <div className="fixed bottom-4 left-1/2 z-50 flex max-w-[calc(100vw-16px)] -translate-x-1/2 flex-wrap justify-center gap-x-3 gap-y-1 rounded-[22px] bg-[#1A0B07] p-1.5 text-[#F4E3C1] shadow-[0_10px_30px_-10px_rgba(0,0,0,.6)]">
+      <Group label="Din-er akash" opts={[['tar', 'Tar-er jongol'], ['chhad', 'Chhad-er kobutor'], ['nodi', 'Nodi']]} v={day} set={setDay} />
+      <Group label="Item section" opts={[['seat', 'Seat chart'], ['poster', 'Poster wall'], ['jhuri', 'Jhuri'], ['list', 'Ager list']]} v={board} set={setBoard} />
     </div>
   )
 }

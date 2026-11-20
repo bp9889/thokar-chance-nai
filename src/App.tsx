@@ -1,9 +1,11 @@
 import { useState } from 'react'
 import Site from './cinema/Site'
-import type { Demo } from './cinema/theme'
+import { DemoPicker, type BoardV } from './cinema/theme'
+import type { DayV } from './cinema/desh'
 
 const DEMOS = import.meta.env.VITE_DEMOS === '1'
 export default function App() {
-  const [demo, setDemo] = useState<Demo>(3)
-  return <Site demo={demo} setDemo={DEMOS ? setDemo : undefined} />
+  const [day, setDay] = useState<DayV>('tar')
+  const [board, setBoard] = useState<BoardV>('seat')
+  return <Site demo={3} day={day} board={board} picker={DEMOS ? <DemoPicker day={day} setDay={setDay} board={board} setBoard={setBoard} /> : undefined} />
 }
