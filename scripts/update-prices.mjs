@@ -19,7 +19,8 @@ const log = (...a) => console.log('[prices]', ...a)
 const dbg = (...a) => DEBUG && console.log('[debug]', ...a)
 
 const bnDigits = '০১২৩৪৫৬৭৮৯'
-const toLatin = (s) => String(s ?? '').replace(/[০-৯]/g, (d) => String(bnDigits.indexOf(d)))
+const decode = (s) => String(s ?? '').replace(/&#(\d+);/g, (_, n) => String.fromCodePoint(+n)).replace(/&#x([0-9a-f]+);/gi, (_, n) => String.fromCodePoint(parseInt(n, 16)))
+const toLatin = (s) => decode(s).replace(/[০-৯]/g, (d) => String(bnDigits.indexOf(d)))
 // NFC + spelling folds so 'পেঁয়াজ'/'পিঁয়াজ', 'কাঁচামরিচ'/'কাঁচা মরিচ' and decomposed য় all compare equal
 const norm = (s) => toLatin(s).normalize('NFC').replace(/\u09DF/g, '\u09AF\u09BC').replace(/ী/g, 'ি').replace(/িঁ/g, 'েঁ').replace(/\s+/g, '').trim()
 const today = () => new Date(Date.now() + 6 * 3600e3).toISOString().slice(0, 10) // Dhaka date
@@ -156,7 +157,9 @@ async function fromDAM() {
     return r.text()
   }
   const many = (key, vals) => vals.map((v) => [key, v])
-  const divs = opts(await post(base + 'get_division_list_ban', []))
+  const rawDiv = await post(base + 'get_division_list_ban', [])
+  dbg('DAM division list raw', rawDiv.slice(0, 400))
+  const divs = opts(rawDiv)
   const div = divs.find(([, n]) => n.startsWith('ঢাকা'))
   const dists = div ? opts(await post(base + 'get_district_list_ban', [['data_id[]', div[0]]])) : []
   const dist = dists.find(([, n]) => n === 'ঢাকা')
