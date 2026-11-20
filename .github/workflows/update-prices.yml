@@ -1,0 +1,41 @@
+name: Update prices
+
+on:
+  schedule:
+    - cron: '17 8 * * *'   # 14:17 Dhaka, after TCB/DAM publish the day's report
+    - cron: '47 13 * * *'  # 19:47 Dhaka, second try for late reports
+  workflow_dispatch:
+    inputs:
+      debug:
+        description: 'Print source page details'
+        default: '0'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: update-prices
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - run: npm install --no-save --no-audit --no-fund @e965/xlsx@0.20.3
+      - name: Fetch prices
+        env:
+          DEBUG: ${{ inputs.debug || '0' }}
+        run: node --use-system-ca scripts/update-prices.mjs
+      - name: Commit if changed
+        run: |
+          if git diff --quiet public/prices.json; then echo "No changes"; exit 0; fi
+          git config user.name "Bishan Paul"
+          git config user.email "228916683+bp9889@users.noreply.github.com"
+          git add public/prices.json
+          git commit -m "Update prices $(TZ=Asia/Dhaka date +%F)"
+          git push

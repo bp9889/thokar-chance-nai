@@ -1,0 +1,441 @@
+{
+ "updated": "2026-11-20",
+ "note": "Seed data from Dhaka market reports (news), Oct to Nov 2026. Replaced automatically by scripts/update-prices.mjs.",
+ "sources": {},
+ "items": {
+  "potato": {
+   "min": 28,
+   "max": 30,
+   "unit": "kg",
+   "date": "2026-11-14",
+   "source": "news"
+  },
+  "newpotato": {
+   "min": 140,
+   "max": 150,
+   "unit": "kg",
+   "date": "2026-11-14",
+   "source": "news"
+  },
+  "onion": {
+   "min": 40,
+   "max": 55,
+   "unit": "kg",
+   "date": "2026-11-14",
+   "source": "news"
+  },
+  "tomato": {
+   "min": 80,
+   "max": 150,
+   "unit": "kg",
+   "date": "2026-11-14",
+   "source": "news"
+  },
+  "cauliflower": {
+   "min": 30,
+   "max": 40,
+   "unit": "piece",
+   "date": "2026-11-14",
+   "source": "news"
+  },
+  "cabbage": {
+   "min": 30,
+   "max": 40,
+   "unit": "piece",
+   "date": "2026-11-14",
+   "source": "news"
+  },
+  "brinjal": {
+   "min": 60,
+   "max": 100,
+   "unit": "kg",
+   "date": "2026-11-14",
+   "source": "news"
+  },
+  "chili": {
+   "min": 100,
+   "max": 140,
+   "unit": "kg",
+   "date": "2026-11-14",
+   "source": "news"
+  },
+  "shim": {
+   "min": 50,
+   "max": 80,
+   "unit": "kg",
+   "date": "2026-11-14",
+   "source": "news"
+  },
+  "lau": {
+   "min": 60,
+   "max": 70,
+   "unit": "kg",
+   "date": "2026-11-14",
+   "source": "news"
+  },
+  "korola": {
+   "min": 60,
+   "max": 80,
+   "unit": "kg",
+   "date": "2026-11-14",
+   "source": "news"
+  },
+  "potol": {
+   "min": 50,
+   "max": 60,
+   "unit": "kg",
+   "date": "2026-11-14",
+   "source": "news"
+  },
+  "dherosh": {
+   "min": 50,
+   "max": 60,
+   "unit": "kg",
+   "date": "2026-11-14",
+   "source": "news"
+  },
+  "chichinga": {
+   "min": 50,
+   "max": 60,
+   "unit": "kg",
+   "date": "2026-11-14",
+   "source": "news"
+  },
+  "jhinga": {
+   "min": 60,
+   "max": 80,
+   "unit": "kg",
+   "date": "2026-11-14",
+   "source": "news"
+  },
+  "kakrol": {
+   "min": 80,
+   "max": 100,
+   "unit": "kg",
+   "date": null,
+   "source": "estimate"
+  },
+  "borboti": {
+   "min": 60,
+   "max": 80,
+   "unit": "kg",
+   "date": "2026-11-14",
+   "source": "news"
+  },
+  "pepe": {
+   "min": 25,
+   "max": 30,
+   "unit": "kg",
+   "date": "2026-11-14",
+   "source": "news"
+  },
+  "kacha_kola": {
+   "min": 40,
+   "max": 40,
+   "unit": "hali",
+   "date": "2026-11-14",
+   "source": "news"
+  },
+  "gajor": {
+   "min": 120,
+   "max": 130,
+   "unit": "kg",
+   "date": "2026-11-14",
+   "source": "news"
+  },
+  "mula": {
+   "min": 40,
+   "max": 60,
+   "unit": "kg",
+   "date": "2026-11-14",
+   "source": "news"
+  },
+  "kumra": {
+   "min": 40,
+   "max": 50,
+   "unit": "kg",
+   "date": "2026-11-14",
+   "source": "news"
+  },
+  "chal_kumra": {
+   "min": 50,
+   "max": 60,
+   "unit": "piece",
+   "date": null,
+   "source": "estimate"
+  },
+  "shosha": {
+   "min": 70,
+   "max": 80,
+   "unit": "kg",
+   "date": "2026-11-14",
+   "source": "news"
+  },
+  "kochu": {
+   "min": 40,
+   "max": 50,
+   "unit": "kg",
+   "date": "2026-11-14",
+   "source": "news"
+  },
+  "kochur_loti": {
+   "min": 80,
+   "max": 80,
+   "unit": "kg",
+   "date": "2026-11-14",
+   "source": "news"
+  },
+  "capsicum": {
+   "min": 300,
+   "max": 300,
+   "unit": "kg",
+   "date": "2026-11-14",
+   "source": "news"
+  },
+  "misti_alu": {
+   "min": 40,
+   "max": 60,
+   "unit": "kg",
+   "date": null,
+   "source": "estimate"
+  },
+  "motorshuti": {
+   "min": 120,
+   "max": 160,
+   "unit": "kg",
+   "date": null,
+   "source": "estimate"
+  },
+  "broccoli": {
+   "min": 60,
+   "max": 80,
+   "unit": "piece",
+   "date": null,
+   "source": "estimate"
+  },
+  "beet": {
+   "min": 80,
+   "max": 100,
+   "unit": "kg",
+   "date": null,
+   "source": "estimate"
+  },
+  "olkopi": {
+   "min": 60,
+   "max": 80,
+   "unit": "kg",
+   "date": null,
+   "source": "estimate"
+  },
+  "mocha": {
+   "min": 30,
+   "max": 40,
+   "unit": "piece",
+   "date": null,
+   "source": "estimate"
+  },
+  "lalshak": {
+   "min": 15,
+   "max": 20,
+   "unit": "bundle",
+   "date": "2026-11-14",
+   "source": "news"
+  },
+  "kolmi": {
+   "min": 10,
+   "max": 20,
+   "unit": "bundle",
+   "date": "2026-11-14",
+   "source": "news"
+  },
+  "pui": {
+   "min": 30,
+   "max": 40,
+   "unit": "bundle",
+   "date": "2026-11-14",
+   "source": "news"
+  },
+  "palong": {
+   "min": 25,
+   "max": 25,
+   "unit": "bundle",
+   "date": "2026-11-14",
+   "source": "news"
+  },
+  "data": {
+   "min": 20,
+   "max": 20,
+   "unit": "bundle",
+   "date": "2026-11-14",
+   "source": "news"
+  },
+  "laushak": {
+   "min": 30,
+   "max": 40,
+   "unit": "bundle",
+   "date": null,
+   "source": "estimate"
+  },
+  "mulashak": {
+   "min": 15,
+   "max": 20,
+   "unit": "bundle",
+   "date": null,
+   "source": "estimate"
+  },
+  "kochushak": {
+   "min": 15,
+   "max": 20,
+   "unit": "bundle",
+   "date": null,
+   "source": "estimate"
+  },
+  "dhonepata": {
+   "min": 30,
+   "max": 40,
+   "unit": "g100",
+   "date": null,
+   "source": "estimate"
+  },
+  "ada": {
+   "min": 150,
+   "max": 200,
+   "unit": "kg",
+   "date": null,
+   "source": "estimate"
+  },
+  "rosun": {
+   "min": 150,
+   "max": 200,
+   "unit": "kg",
+   "date": null,
+   "source": "estimate"
+  },
+  "lebu": {
+   "min": 20,
+   "max": 40,
+   "unit": "hali",
+   "date": null,
+   "source": "estimate"
+  },
+  "peyara": {
+   "min": 70,
+   "max": 100,
+   "unit": "kg",
+   "date": null,
+   "source": "estimate"
+  },
+  "malta": {
+   "min": 350,
+   "max": 400,
+   "unit": "kg",
+   "date": "2026-11-14",
+   "source": "news"
+  },
+  "komola": {
+   "min": 350,
+   "max": 400,
+   "unit": "kg",
+   "date": null,
+   "source": "estimate"
+  },
+  "apel": {
+   "min": 350,
+   "max": 450,
+   "unit": "kg",
+   "date": "2026-11-14",
+   "source": "news"
+  },
+  "angur": {
+   "min": 450,
+   "max": 500,
+   "unit": "kg",
+   "date": null,
+   "source": "estimate"
+  },
+  "dalim": {
+   "min": 450,
+   "max": 500,
+   "unit": "kg",
+   "date": null,
+   "source": "estimate"
+  },
+  "naspati": {
+   "min": 330,
+   "max": 400,
+   "unit": "kg",
+   "date": null,
+   "source": "estimate"
+  },
+  "pepe_paka": {
+   "min": 100,
+   "max": 120,
+   "unit": "kg",
+   "date": null,
+   "source": "estimate"
+  },
+  "kola": {
+   "min": 40,
+   "max": 60,
+   "unit": "hali",
+   "date": null,
+   "source": "estimate"
+  },
+  "dab": {
+   "min": 150,
+   "max": 220,
+   "unit": "piece",
+   "date": "2026-11-14",
+   "source": "news"
+  },
+  "anaros": {
+   "min": 40,
+   "max": 70,
+   "unit": "piece",
+   "date": null,
+   "source": "estimate"
+  },
+  "jolpai": {
+   "min": 40,
+   "max": 50,
+   "unit": "kg",
+   "date": "2026-11-14",
+   "source": "news"
+  },
+  "boroi": {
+   "min": 100,
+   "max": 120,
+   "unit": "kg",
+   "date": null,
+   "source": "estimate"
+  },
+  "amloki": {
+   "min": 200,
+   "max": 240,
+   "unit": "kg",
+   "date": null,
+   "source": "estimate"
+  },
+  "kamranga": {
+   "min": 60,
+   "max": 80,
+   "unit": "kg",
+   "date": null,
+   "source": "estimate"
+  },
+  "sofeda": {
+   "min": 120,
+   "max": 150,
+   "unit": "kg",
+   "date": null,
+   "source": "estimate"
+  },
+  "khejur": {
+   "min": 600,
+   "max": 900,
+   "unit": "kg",
+   "date": null,
+   "source": "estimate"
+  }
+ }
+}
