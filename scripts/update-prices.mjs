@@ -150,8 +150,10 @@ async function fromDAM() {
   const cookie = (first.headers.getSetCookie?.() || []).map((c) => c.split(';')[0]).join('; ')
   const html = await first.text()
   const token = html.match(/name="csrf_webspice_tkn"\s+value="([^"]+)"/)?.[1] || ''
+  let tok = token
+  const refresh = async () => { const h = await (await fetch(page, { headers: { ...UA, cookie }, signal: AbortSignal.timeout(45000) })).text(); tok = h.match(/name="csrf_webspice_tkn"\s+value="([^"]+)"/)?.[1] || tok }
   const post = async (url, pairs) => {
-    const body = new URLSearchParams([['csrf_webspice_tkn', token], ...pairs])
+    const body = new URLSearchParams([['csrf_webspice_tkn', tok], ...pairs])
     const r = await fetch(url, { method: 'POST', body, headers: { ...UA, cookie, 'x-requested-with': 'XMLHttpRequest', 'content-type': 'application/x-www-form-urlencoded; charset=UTF-8', referer: page }, signal: AbortSignal.timeout(60000) })
     if (!r.ok) throw new Error(`${r.status} ${url}`)
     return r.text()
@@ -173,6 +175,7 @@ async function fromDAM() {
   for (let back = 0; back < 5; back++) {
     const d = new Date(Date.parse(today()) - back * 864e5).toISOString().slice(0, 10)
     for (const date of fmts(d)) {
+      await refresh()
       const out = await post(page, [
         ['Division_id[]', div[0]], ['District_id[]', dist[0]],
         ...many('Subdistrict_id[]', subs.map((x) => x[0])), ...many('Market_id[]', markets.map((x) => x[0])),
@@ -186,8 +189,7 @@ async function fromDAM() {
       dbg(`DAM ${date}: ${out.length} bytes, ${table.length} rows`, table.slice(0, 12).map((c) => c.join(' | ')))
       if (DEBUG && back === 0 && date === fmts(d)[0]) {
         const txt = toLatin(out.replace(/<script[\s\S]*?<\/script>|<style[\s\S]*?<\/style>/gi, ' ').replace(/<[^>]+>/g, ' ')).replace(/\s+/g, ' ')
-        const at = txt.indexOf('Generate Report')
-        dbg('DAM response text after form:', txt.slice(at, at + 1500))
+        dbg('DAM response title:', out.match(/<title>([^<]*)/)?.[1], 'text:', txt.slice(2500, 4500))
         dbg('DAM datepicker config:', (html.match(/date_picker[\s\S]{0,300}/g) || []).map((x) => x.replace(/\s+/g, ' ')).slice(0, 4))
         dbg('DAM tables in response:', (out.match(/<table[^>]*>/gi) || []).length, 'iframes/links:', (out.match(/(iframe|href)="[^"]*report[^"]*"/gi) || []).slice(0, 8))
       }
