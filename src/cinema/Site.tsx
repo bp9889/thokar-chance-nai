@@ -4,15 +4,16 @@ import { IMG, ITEMS, applyLive, type Live } from '@/lib/data'
 import { cn } from '@/lib/utils'
 import { BN, POSTER, extrude, halftone, star, KashemChat, ListPage, type ChatSkin, type ListSkin, type Page } from './common'
 import { FX_MS, PageFx } from './transitions'
+import { DemoPicker, ModeSwitch, Sides, THEME_CSS, useMode, type Demo } from './theme'
 
 const chat: ChatSkin = {
-  wrap: 'bg-[#F4E3C1] text-[#1A0B07] shadow-[8px_8px_0_#06292C]', seller: 'bg-white text-[#1A0B07] ring-2 ring-[#1A0B07]', me: 'bg-[#C4161C] text-[#FFF1D6] ring-2 ring-[#1A0B07]',
+  wrap: 'bg-[#F4E3C1] text-[#1A0B07] shadow-[8px_8px_0_var(--deep)]', seller: 'bg-white text-[#1A0B07] ring-2 ring-[#1A0B07]', me: 'bg-[#C4161C] text-[#FFF1D6] ring-2 ring-[#1A0B07]',
   avatar: 'bg-[#FFD21F] text-[#1A0B07] ring-2 ring-[#1A0B07]', accent: 'text-[#FFD21F]', slider: '[--primary:#FFD21F] [--background:#C4161C] [--slider-track-color:rgba(26,11,7,.35)]',
   btn: 'bg-[#FFD21F] text-[#1A0B07] ring-2 ring-[#1A0B07] shadow-[3px_3px_0_#1A0B07]', ghost: 'bg-[#1A0B07] text-[#F4E3C1]', muted: 'opacity-70', inCls: 'in-poster',
 }
 const list: ListSkin = {
-  page: 'text-[#F4E3C1]', card: 'bg-[#FFF8EA] text-[#1A0B07] shadow-[8px_8px_0_#06292C]', guideCard: 'bg-[#FFD21F] text-[#1A0B07] shadow-[8px_8px_0_#06292C]', muted: 'opacity-70', accent: 'text-[#C4161C]',
-  btn: 'bg-[#F4E3C1] text-[#1A0B07] shadow-[3px_3px_0_#06292C]', rowLine: 'border-b-2 border-dashed border-current/25', enter: 'pw-slap',
+  page: 'text-[var(--ink)]', card: 'bg-[#FFF8EA] text-[#1A0B07] shadow-[8px_8px_0_var(--deep)]', guideCard: 'bg-[#FFD21F] text-[#1A0B07] shadow-[8px_8px_0_var(--deep)]', muted: 'opacity-70', accent: 'text-[#C4161C]',
+  btn: 'bg-[#F4E3C1] text-[#1A0B07] shadow-[3px_3px_0_var(--deep)]', rowLine: 'border-b-2 border-dashed border-current/25', enter: 'pw-slap',
   title: (s) => <h2 className="pw-brush" style={extrude('clamp(2.6rem,6vw,4rem)', '#C4161C', '#1A0B07')}>{s}</h2>,
 }
 
@@ -46,7 +47,7 @@ function useReveal(dep: unknown) {
 
 function Caution({ className, updated }: { className?: string; updated: string | null }) {
   return (
-    <aside className={cn('rv rv-slap relative flex gap-4 rounded-[6px] bg-[#FFD21F] p-5 text-[#1A0B07] shadow-[6px_6px_0_#06292C] md:gap-6 md:p-6', className)}
+    <aside className={cn('rv rv-slap relative flex gap-4 rounded-[6px] bg-[#FFD21F] p-5 text-[#1A0B07] shadow-[6px_6px_0_var(--deep)] md:gap-6 md:p-6', className)}
       style={{ backgroundImage: 'repeating-linear-gradient(-45deg, #1A0B07 0 14px, #FFD21F 14px 28px)', backgroundSize: '100% 12px', backgroundRepeat: 'no-repeat', paddingTop: '28px' }}>
       <div className="caution-wobble grid size-16 shrink-0 place-items-center md:size-20" aria-hidden>
         <svg viewBox="0 0 100 90" className="h-full w-full"><path d="M50 4 96 86H4z" fill="#1A0B07" /><path d="M50 18 84 80H16z" fill="#FFD21F" /><path d="M46 36h8l-1.5 26h-5z" fill="#1A0B07" /><circle cx="50" cy="71" r="4.5" fill="#1A0B07" /></svg>
@@ -54,13 +55,14 @@ function Caution({ className, updated }: { className?: string; updated: string |
       <div>
         <p className="text-2xl leading-none md:text-3xl" style={{ fontFamily: POSTER }}>SAVDHAN! Dam ektu upor-nich hobei</p>
         <p className="mt-2 max-w-[62ch] text-lg leading-snug">Bhai, ekhane ja dekhchen ta Dhaka-r bazar-er <b>usual range</b>. Area, quality ar shokal-bikal bhede dam ektu edik-odik hoy, oita normal. Kintu mama jodi range theke onek beshi chay? Tokhon shundor kore bolen: <b>"Eto na ভাই."</b></p>
-        <p className="mt-2 text-sm opacity-80">Dam auto-update hoy TCB ar DAM-er daily report theke{updated ? `, last checked ${updated}` : ''}. "approx." mane rough estimate; "Update pending" mane 7 din er beshi fresh report nai.</p>
+        <p className="mt-2 text-sm opacity-80">Alu, peyaj, rosun, ada, kacha morich, begun, shosha, lebu ar khejur-er dam roj auto-update hoy TCB-er Dhaka report theke{updated ? ` (last checked ${updated})` : ''}. Baki gula "approx.", mane rough estimate. "Update pending" mane 7 din er beshi fresh report nai.</p>
       </div>
     </aside>
   )
 }
 
-export default function Site() {
+export default function Site({ demo = 1, setDemo }: { demo?: Demo; setDemo?: (d: Demo) => void }) {
+  const { mode, toggle } = useMode()
   const [ver, setVer] = useState(0)
   const [updated, setUpdated] = useState<string | null>(null)
   useEffect(() => {
@@ -71,10 +73,14 @@ export default function Site() {
   const [sel, setSel] = useState<string>('potato')
   useReveal(`${page}-${b.cat}-${b.q}`)
   const cur = b.board.find((i) => i.id === sel) ?? b.board[0]
+  const pick = (id: string) => { b.setQ(''); b.setCat('all'); setSel(id); document.getElementById('now-cholche')?.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' }) }
   const fruitCount = ITEMS.filter((i) => i.cat === 'fruit').length, vegCount = ITEMS.length - fruitCount
 
   return (
-    <div className="min-h-[100dvh] overflow-x-clip bg-[#0B4F55] text-[#F4E3C1]" style={{ fontFamily: BN }}>
+    <div className="tcn relative min-h-[100dvh] overflow-x-clip" data-d={demo} data-m={mode} style={{ fontFamily: BN }}>
+      <style>{THEME_CSS}</style>
+      <Sides demo={demo} ver={ver} onPick={pick} />
+      {setDemo && <DemoPicker demo={demo} set={setDemo} />}
       <style>{`
         @keyframes pw-slap{0%{opacity:0;scale:1.12;rotate:3deg}60%{opacity:1;scale:.985;rotate:-.6deg}100%{opacity:1;scale:1;rotate:0deg}}
         @keyframes pw-shine{0%{translate:-120% 0;opacity:1}85%{opacity:1}100%{translate:420% 0;opacity:0}}
@@ -91,7 +97,7 @@ export default function Site() {
         .pw-rays{animation:pw-rays 70s linear infinite}
         @media (hover:hover) and (pointer:fine){.pw-wig:hover{animation:pw-wiggle 300ms ease}}
         .pw-idx{transition:translate 200ms var(--ease-out), color 200ms ease}
-        .pw-idx[aria-current="true"]{translate:12px 0;color:#FFD21F}
+        .pw-idx[aria-current="true"]{translate:12px 0;color:var(--hi)}
         /* Triggered reveals: fully hidden until scrolled into view, then play once */
         .rv-brush > *{clip-path:inset(-20% 100% -20% 0)}
         .rv-brush.on > *{animation:pw-wipe 750ms var(--ease-in-out) both}
@@ -106,9 +112,10 @@ export default function Site() {
       <PageFx fx="shutter" phase={phase} />
 
       <header className="relative z-10 mx-auto flex max-w-[1180px] flex-wrap items-center justify-between gap-3 px-4 pt-5 md:px-6">
-        <button type="button" onClick={() => go('home')} className="cursor-pointer text-xl md:text-2xl" style={{ fontFamily: POSTER, color: '#FFD21F' }}>THOKAR <span style={{ fontFamily: BN }}>চান্স</span> NAI</button>
-        <nav aria-label="Main" className="flex flex-wrap items-center gap-1 text-lg">
-          {page === 'home' && <><a href="#dor-dam" className="rounded-full px-4 py-2 hover:bg-white/10">Dor-দাম</a><a href="#now-cholche" className="rounded-full px-4 py-2 hover:bg-white/10">Now চলছে</a></>}
+        <button type="button" onClick={() => go('home')} className="cursor-pointer text-xl md:text-2xl" style={{ fontFamily: POSTER, color: 'var(--brand)', transition: 'color 400ms ease' }}>THOKAR <span style={{ fontFamily: BN }}>চান্স</span> NAI</button>
+        <nav aria-label="Main" className="flex flex-wrap items-center gap-2 text-lg">
+          {page === 'home' && <><a href="#dor-dam" className="rounded-full px-4 py-2 hover:bg-[var(--hover)]">Dor-দাম</a><a href="#now-cholche" className="rounded-full px-4 py-2 hover:bg-[var(--hover)]">Now চলছে</a></>}
+          <ModeSwitch demo={demo} mode={mode} toggle={toggle} />
           <button type="button" onClick={() => go(page === 'home' ? 'list' : 'home')} className="kc-press pw-wig flex h-11 cursor-pointer items-center gap-2 rounded-[4px] bg-[#FFD21F] px-5 font-bold text-[#1A0B07] shadow-[3px_3px_0_#1A0B07]">
             {page === 'home' ? <>Amar list <span key={b.list.rows.length} className="kc-stamp grid size-7 place-items-center rounded-full bg-[#C4161C] text-sm text-[#FFD21F]">{b.list.rows.length}</span></> : 'Back to the wall'}
           </button>
@@ -116,7 +123,7 @@ export default function Site() {
       </header>
 
       {page === 'home' ? (
-        <main>
+        <main className="relative z-[1]">
           {/* HERO POSTER */}
           <section className="mx-auto max-w-[1180px] px-3 pt-6 pb-20 md:px-6">
             <div className="pw-slap relative overflow-hidden rounded-[6px] bg-[#F4E3C1] text-[#1A0B07] shadow-[0_30px_60px_-20px_rgba(0,0,0,.6)]">
@@ -159,22 +166,22 @@ export default function Site() {
           {/* DOR-DAM */}
           <section id="dor-dam" className="mx-auto max-w-[980px] scroll-mt-6 px-4 pb-24 md:px-6">
             <div className="rv rv-brush"><h2 style={extrude('clamp(2.8rem,7vw,5rem)', '#F4E3C1', '#C4161C')}>Dor-দাম <span style={{ fontFamily: POSTER, fontSize: '.5em', WebkitTextStroke: '0.03em #1A0B07' }}>with Kashem bhai</span></h2></div>
-            <p className="mt-3 mb-8 max-w-[54ch] text-lg text-[#CFE6E3]">A comic-strip bargain. He names the item, you say your price, he tells you if you got it right. Kashem bhai is a made-up character, kintu tar dor-dam ekdom real.</p>
+            <p className="mt-3 mb-8 max-w-[54ch] text-lg text-[var(--soft)]">A comic-strip bargain. He names the item, you say your price, he tells you if you got it right. Kashem bhai is a made-up character, kintu tar dor-dam ekdom real.</p>
             <div className="rv rv-slap"><KashemChat b={b} skin={chat} id="tcn-guess" /></div>
           </section>
 
           {/* NOW CHOLCHE */}
           <section id="now-cholche" className="mx-auto max-w-[1180px] scroll-mt-6 px-4 pb-32 md:px-6">
             <div className="rv rv-brush"><h2 style={extrude('clamp(3rem,8vw,5.5rem)', '#FFD21F', '#C4161C')}><span style={{ fontFamily: POSTER, fontSize: '.7em' }}>NOW </span>চলছে</h2></div>
-            <p className="mt-2 text-lg text-[#CFE6E3]">{ITEMS.length} items: sobji, shak, moshla ar fol. Naam e hover korun ba tap korun, poster ta dekhben.</p>
+            <p className="mt-2 text-lg text-[var(--soft)]">{ITEMS.length} items: sobji, shak, moshla ar fol. Naam e hover korun ba tap korun, poster ta dekhben.</p>
             <Caution className="mt-6" updated={updated} />
             <div className="mt-8 flex flex-wrap items-center gap-3">
-              <label className="flex h-12 min-w-0 flex-1 basis-60 items-center rounded-[4px] bg-[#F4E3C1] px-4 text-[#1A0B07]">
+              <label className="flex h-12 min-w-0 flex-1 basis-60 items-center rounded-[4px] bg-[#FFF8EA] px-4 text-[#1A0B07] shadow-[3px_3px_0_var(--deep)] ring-1 ring-[#1A0B07]/20">
                 <span className="sr-only">Search fruits and vegetables</span>
                 <input type="search" value={b.q} onChange={(e) => b.setQ(e.target.value)} placeholder="Khujun: alu, malta, palong…" className="w-full bg-transparent text-lg outline-none placeholder:text-[#6B5A48]" />
               </label>
               <div role="group" aria-label="Filter" className="flex flex-wrap gap-2">
-                {b.cats.map((c) => <button key={c.id} type="button" aria-pressed={b.cat === c.id} onClick={() => b.setCat(c.id)} className={cn('kc-press h-11 cursor-pointer rounded-[4px] px-4 text-lg font-bold transition-colors duration-200', b.cat === c.id ? 'bg-[#FFD21F] text-[#1A0B07]' : 'bg-[#06292C] text-[#F4E3C1]')}>{c.label}</button>)}
+                {b.cats.map((c) => <button key={c.id} type="button" aria-pressed={b.cat === c.id} onClick={() => b.setCat(c.id)} className={cn('kc-press h-11 cursor-pointer rounded-[4px] px-4 text-lg font-bold transition-colors duration-200', b.cat === c.id ? 'bg-[#FFD21F] text-[#1A0B07]' : 'bg-[var(--chip)] text-[var(--chip-ink)]')}>{c.label}</button>)}
               </div>
             </div>
             {b.board.length === 0 && <p className="mt-8 text-xl">"{b.q}" naam e kono show nai. Try alu ba malta.</p>}
@@ -182,7 +189,7 @@ export default function Site() {
               <div className="mt-10 grid gap-8 md:grid-cols-[1fr_1.05fr]">
                 <ul key={`${b.cat}-${b.q}`} className="rv rv-rows" aria-label="Today's items">
                   {b.board.map((i, k) => (
-                    <li key={i.id} className="border-b border-[#F4E3C1]/15" style={{ animationDelay: `${Math.min(k, 14) * 35}ms` }}>
+                    <li key={i.id} className="border-b border-[var(--line)]" style={{ animationDelay: `${Math.min(k, 14) * 35}ms` }}>
                       <button type="button" aria-current={cur.id === i.id} onMouseEnter={() => setSel(i.id)} onFocus={() => setSel(i.id)} onClick={() => setSel(i.id)}
                         className={cn('pw-idx flex w-full cursor-pointer items-center justify-between gap-4 py-3 text-left', !i.available && 'opacity-55')}>
                         <span className="flex items-center gap-3"><img src={i.img} alt="" className="size-8" /><span className="text-[clamp(1.25rem,2.6vw,1.7rem)] leading-none" style={{ fontFamily: POSTER }}>{i.local}</span></span>
@@ -203,7 +210,7 @@ export default function Site() {
                 </ul>
                 <div className="hidden md:block">
                   <div className="md:sticky md:top-6">
-                    <div key={cur.id} className="pw-slap relative overflow-hidden rounded-[6px] p-8 text-[#FFF1D6] shadow-[10px_10px_0_#06292C]" style={{ animationDuration: '420ms', background: cur.available ? '#C4161C' : '#3A3A3A' }}>
+                    <div key={cur.id} className="pw-slap relative overflow-hidden rounded-[6px] p-8 text-[#FFF1D6] shadow-[10px_10px_0_var(--deep)]" style={{ animationDuration: '420ms', background: cur.available ? '#C4161C' : '#3A3A3A' }}>
                       <div aria-hidden className="absolute inset-0" style={halftone} />
                       <p className="relative" style={{ fontFamily: POSTER, color: '#FFD21F' }}>{cur.available ? 'Now showing' : 'Coming soon'}</p>
                       <img src={cur.img} alt="" className={cn('relative mx-auto my-4 size-56 -rotate-6 drop-shadow-[8px_10px_0_rgba(26,11,7,.8)]', !cur.available && 'grayscale')} />
@@ -224,13 +231,13 @@ export default function Site() {
           </section>
         </main>
       ) : (
-        <ListPage b={b} skin={list} goHome={() => go('home')} />
+        <div className="relative z-[1]"><ListPage b={b} skin={list} goHome={() => go('home')} /></div>
       )}
 
-      <footer className="mx-auto max-w-[1180px] px-4 pb-28 md:px-6">
-        <div className="flex flex-col gap-4 border-t border-[#F4E3C1]/20 pt-8 md:flex-row md:items-end md:justify-between">
-          <p className="max-w-[70ch] text-sm text-[#CFE6E3]">Dorshokder jonno special ঘোষণা: prices update automatically every day from the government's Dhaka market reports (TCB and DAM). They are averages, so your shop may be a little higher or lower. Every price shows when it was last updated.</p>
-          <p className="text-xl" style={{ fontFamily: POSTER, color: '#FFD21F' }}>THOKAR <span style={{ fontFamily: BN }}>চান্স</span> NAI</p>
+      <footer className="relative z-[1] mx-auto max-w-[1180px] px-4 pb-28 md:px-6">
+        <div className="flex flex-col gap-4 border-t border-[var(--line)] pt-8 md:flex-row md:items-end md:justify-between">
+          <p className="max-w-[70ch] text-sm text-[var(--soft)]">Dorshokder jonno special ঘোষণা: the main bazar items update automatically every day from TCB's Dhaka market report; the rest are marked approx. They are averages, so your shop may be a little higher or lower. Every price shows when it was last updated.</p>
+          <p className="text-xl" style={{ fontFamily: POSTER, color: 'var(--brand)' }}>THOKAR <span style={{ fontFamily: BN }}>চান্স</span> NAI</p>
         </div>
       </footer>
     </div>
