@@ -19,18 +19,19 @@ const dbg = (...a) => DEBUG && console.log('[debug]', ...a)
 
 const bnDigits = '০১২৩৪৫৬৭৮৯'
 const toLatin = (s) => String(s ?? '').replace(/[০-৯]/g, (d) => String(bnDigits.indexOf(d)))
-const norm = (s) => toLatin(s).replace(/\s+/g, ' ').replace(/ী/g, 'ি').replace(/িঁ/g, 'েঁ').trim()
+// NFC + spelling folds so 'পেঁয়াজ'/'পিঁয়াজ', 'কাঁচামরিচ'/'কাঁচা মরিচ' and decomposed য় all compare equal
+const norm = (s) => toLatin(s).normalize('NFC').replace(/\u09DF/g, '\u09AF\u09BC').replace(/ী/g, 'ি').replace(/িঁ/g, 'েঁ').replace(/\s+/g, '').trim()
 const today = () => new Date(Date.now() + 6 * 3600e3).toISOString().slice(0, 10) // Dhaka date
 
 // Our item id -> Bangla names as they appear in government sheets (first match wins).
 // "skip" patterns stop a looser name matching a different product (e.g. imported vs local).
 const MATCH = {
-  potato: { any: ['আলু'], skip: ['মিষ্টি', 'নতুন'] },
+  potato: { any: ['আলু'], skip: ['মিষ্টি', 'নতুন আলু'] },
   newpotato: { any: ['নতুন আলু'] },
   onion: { any: ['পেঁয়াজ (দেশি)', 'পেঁয়াজ দেশি', 'পেঁয়াজ - দেশি', 'পেয়াজ (দেশি)', 'পেঁয়াজ'], skip: ['আমদানি', 'পাতা'] },
   rosun: { any: ['রসুন (দেশি)', 'রসুন দেশি', 'রসুন - দেশি', 'রসুন'], skip: ['আমদানি'] },
   ada: { any: ['আদা (দেশি)', 'আদা দেশি', 'আদা - দেশি', 'আদা'], skip: ['আমদানি'] },
-  chili: { any: ['কাঁচা মরিচ', 'কাচা মরিচ'] },
+  chili: { any: ['কাঁচা মরিচ', 'কাচা মরিচ'], skip: ['শুকনা'] },
   tomato: { any: ['টমেটো'] },
   brinjal: { any: ['লম্বা বেগুন', 'বেগুন'] },
   cauliflower: { any: ['ফুলকপি'] },
@@ -80,7 +81,8 @@ function pick(rows, id) {
   const m = MATCH[id]
   for (const pat of m.any) {
     const p = norm(pat)
-    const row = rows.find(([name]) => name.includes(p) && !(m.skip || []).some((s) => name.includes(norm(s))))
+    // long labels are report commentary ("…এর মূল্য বৃদ্ধি পেয়েছে"), not price rows
+    const row = rows.find(([name]) => name.length < 40 && name.includes(p) && !(m.skip || []).some((s) => name.includes(norm(s))))
     if (row) {
       const nums = row[1].filter((n) => n > 0 && n < 5000)
       if (nums.length >= 2) return { min: Math.min(nums[0], nums[1]), max: Math.max(nums[0], nums[1]) }

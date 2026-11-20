@@ -5,36 +5,14 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 8
     steps:
-      - name: Reachability
+      - name: DAM page internals
         shell: bash
         run: |
           set +e
-          for u in https://tcb.gov.bd/pages/daily-rmps https://market.dam.gov.bd/market_daily_price_report https://dam.gov.bd/; do
-            echo "=== $u"; rm -f /tmp/out; curl -sS -o /tmp/out -w "code=%{http_code} ip=%{remote_ip}\n" --max-time 30 -A "Mozilla/5.0" "$u" 2>&1 | tail -2; head -c 200 /tmp/out 2>/dev/null; echo
-          done
-      - name: Complete TCB chain via AIA
-        shell: bash
-        run: |
-          set +e
-          echo | openssl s_client -connect tcb.gov.bd:443 -servername tcb.gov.bd -showcerts 2>/dev/null | awk '/BEGIN CERT/,/END CERT/' > /tmp/served.pem
-          grep -c "BEGIN CERT" /tmp/served.pem
-          AIA=$(openssl x509 -in /tmp/served.pem -noout -text | grep -A2 "Authority Information Access" | grep -oE "CA Issuers - URI:[^ ]+" | sed 's/CA Issuers - URI://')
-          echo "AIA=$AIA"
-          curl -sS --max-time 20 "$AIA" -o /tmp/inter.der && (openssl x509 -inform DER -in /tmp/inter.der -out /tmp/inter.pem 2>/dev/null || cp /tmp/inter.der /tmp/inter.pem)
-          openssl x509 -in /tmp/inter.pem -noout -subject -issuer
-          cat /etc/ssl/certs/ca-certificates.crt /tmp/inter.pem > /tmp/bundle.pem
-          curl -sS --cacert /tmp/bundle.pem --max-time 30 -A "Mozilla/5.0" https://tcb.gov.bd/pages/daily-rmps -o /tmp/tcb.html -w "with chain: code=%{http_code}\n"
-          grep -oiE 'href="[^"]+\.(xlsx|xls|pdf)"' /tmp/tcb.html | head -6
-          grep -oiE 'href="[^"]*(rmp|daily|price|bazar)[^"]*"' /tmp/tcb.html | sort -u | head -12
-          grep -oiE '<a[^>]+>[^<]{0,80}' /tmp/tcb.html | grep -iE 'xls|pdf|দৈনিক|বাজার' | head -10
-      - name: DAM scripts
-        shell: bash
-        run: |
-          set +e
-          curl -sS --max-time 30 -A "Mozilla/5.0" https://market.dam.gov.bd/market_daily_price_report -o /tmp/dam.html
-          grep -oiE '<script[^>]+src="[^"]+"' /tmp/dam.html | head -20
-          grep -oiE "url\s*:\s*['\"][^'\"]+['\"]" /tmp/dam.html | sort -u | head -30
-          grep -oiE "\\$\.(get|post|ajax|getJSON)\(['\"][^'\"]+" /tmp/dam.html | sort -u | head -20
-          grep -oiE "(fetch|axios\.(get|post))\(['\"\`][^'\"\`]+" /tmp/dam.html | sort -u | head -20
-          grep -oiE '<form[^>]*>' /tmp/dam.html | head -5
-          grep -oiE 'name="_token"[^>]*' /tmp/dam.html | head -2
+          curl -sS --max-time 40 -A "Mozilla/5.0" -c /tmp/cj https://market.dam.gov.bd/market_daily_price_report -o /tmp/dam.html
+          echo "size: $(wc -c < /tmp/dam.html)"
+          grep -oiE '<script[^>]*src="[^"]+"' /tmp/dam.html
+          echo "--- inline script lines mentioning ajax/url/district/market"
+          grep -nE "ajax|url|District|district|Market_id|market_id|\.change|route\(|/get|json" /tmp/dam.html | grep -v "<link" | cut -c1-220 | head -60
+          echo "--- form"
+          grep -nE "<form|_token|type=\"submit\"|name=\"date|datepicker|PriceType|Division_id" /tmp/dam.html | cut -c1-220 | head -20
