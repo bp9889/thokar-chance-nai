@@ -1,0 +1,20 @@
+name: Source diagnostics
+on: workflow_dispatch
+jobs:
+  diag:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Reachability
+        run: |
+          for u in https://tcb.gov.bd/pages/daily-rmps https://tcb.gov.bd/ http://tcb.gov.bd/ https://market.dam.gov.bd/market_daily_price_report https://dam.gov.bd/; do
+            echo "=== $u"; curl -sS -o /tmp/out -w "code=%{http_code} ip=%{remote_ip} time=%{time_total}\n" --max-time 30 -A "Mozilla/5.0" "$u" 2>&1 | tail -2; head -c 300 /tmp/out 2>/dev/null; echo
+          done
+          echo "=== TLS detail tcb"; curl -sv --max-time 20 https://tcb.gov.bd/ -o /dev/null 2>&1 | grep -Ei "SSL|certificate|connect|error" | head -12
+          echo "=== insecure tcb listing (diagnostic only)"; curl -sk --max-time 30 -A "Mozilla/5.0" https://tcb.gov.bd/pages/daily-rmps -o /tmp/tcb.html -w "code=%{http_code}\n"; grep -oiE 'href="[^"]+\.(xlsx|xls|pdf)"' /tmp/tcb.html | head -8; grep -oiE 'href="[^"]*daily[^"]*"' /tmp/tcb.html | head -8
+      - name: DAM scripts
+        run: |
+          curl -sS --max-time 30 -A "Mozilla/5.0" https://market.dam.gov.bd/market_daily_price_report -o /tmp/dam.html
+          grep -oiE '<script[^>]+src="[^"]+"' /tmp/dam.html | head -20
+          grep -oiE "(url\s*:\s*['\"][^'\"]+['\"]|\\$\.(get|post|ajax)\([^)]{0,120})" /tmp/dam.html | head -30
+          grep -oiE '(action|data-url|href)="[^"]*(report|price|ajax|get)[^"]*"' /tmp/dam.html | sort -u | head -40
