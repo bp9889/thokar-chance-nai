@@ -184,6 +184,13 @@ async function fromDAM() {
         if (cells.some((c) => /[ঀ-৿]/.test(c)) && cells.some((c) => /\d/.test(c))) table.push(cells)
       }
       dbg(`DAM ${date}: ${out.length} bytes, ${table.length} rows`, table.slice(0, 12).map((c) => c.join(' | ')))
+      if (DEBUG && back === 0 && date === fmts(d)[0]) {
+        const txt = toLatin(out.replace(/<script[\s\S]*?<\/script>|<style[\s\S]*?<\/style>/gi, ' ').replace(/<[^>]+>/g, ' ')).replace(/\s+/g, ' ')
+        const at = txt.indexOf('Generate Report')
+        dbg('DAM response text after form:', txt.slice(at, at + 1500))
+        dbg('DAM datepicker config:', (html.match(/date_picker[\s\S]{0,300}/g) || []).map((x) => x.replace(/\s+/g, ' ')).slice(0, 4))
+        dbg('DAM tables in response:', (out.match(/<table[^>]*>/gi) || []).length, 'iframes/links:', (out.match(/(iframe|href)="[^"]*report[^"]*"/gi) || []).slice(0, 8))
+      }
       if (table.length < 5) continue
       // Several markets per item: group by item name, take the median min and median max.
       const by = new Map()
