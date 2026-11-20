@@ -234,7 +234,8 @@ function sane(prev, next) {
 async function main() {
   const data = JSON.parse(fs.readFileSync(FILE, 'utf8'))
   const results = []
-  for (const fn of [fromTCB, fromDAM]) {
+  // DAM's report form doesn't return data to scripts yet; enable with DAM=1 once that's sorted
+  for (const fn of process.env.DAM === '1' ? [fromTCB, fromDAM] : [fromTCB]) {
     try { const r = await fn(); results.push(r); log(`${r.name}: ${r.rows.length} rows, report date ${r.date}`) } catch (e) { log(`${fn.name} failed: ${e.message}${e.cause ? ' (' + (e.cause.code || e.cause.message) + ')' : ''}`) }
   }
   let changed = 0

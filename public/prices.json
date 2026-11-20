@@ -19,8 +19,8 @@
    "min": 140,
    "max": 150,
    "unit": "kg",
-   "date": "2026-11-14",
-   "source": "news"
+   "date": null,
+   "source": "estimate"
   },
   "onion": {
    "min": 40,
@@ -33,22 +33,22 @@
    "min": 80,
    "max": 150,
    "unit": "kg",
-   "date": "2026-11-14",
-   "source": "news"
+   "date": null,
+   "source": "estimate"
   },
   "cauliflower": {
    "min": 30,
    "max": 40,
    "unit": "piece",
-   "date": "2026-11-14",
-   "source": "news"
+   "date": null,
+   "source": "estimate"
   },
   "cabbage": {
    "min": 30,
    "max": 40,
    "unit": "piece",
-   "date": "2026-11-14",
-   "source": "news"
+   "date": null,
+   "source": "estimate"
   },
   "brinjal": {
    "min": 50,
@@ -68,50 +68,50 @@
    "min": 50,
    "max": 80,
    "unit": "kg",
-   "date": "2026-11-14",
-   "source": "news"
+   "date": null,
+   "source": "estimate"
   },
   "lau": {
    "min": 60,
    "max": 70,
    "unit": "kg",
-   "date": "2026-11-14",
-   "source": "news"
+   "date": null,
+   "source": "estimate"
   },
   "korola": {
    "min": 60,
    "max": 80,
    "unit": "kg",
-   "date": "2026-11-14",
-   "source": "news"
+   "date": null,
+   "source": "estimate"
   },
   "potol": {
    "min": 50,
    "max": 60,
    "unit": "kg",
-   "date": "2026-11-14",
-   "source": "news"
+   "date": null,
+   "source": "estimate"
   },
   "dherosh": {
    "min": 50,
    "max": 60,
    "unit": "kg",
-   "date": "2026-11-14",
-   "source": "news"
+   "date": null,
+   "source": "estimate"
   },
   "chichinga": {
    "min": 50,
    "max": 60,
    "unit": "kg",
-   "date": "2026-11-14",
-   "source": "news"
+   "date": null,
+   "source": "estimate"
   },
   "jhinga": {
    "min": 60,
    "max": 80,
    "unit": "kg",
-   "date": "2026-11-14",
-   "source": "news"
+   "date": null,
+   "source": "estimate"
   },
   "kakrol": {
    "min": 80,
@@ -124,43 +124,43 @@
    "min": 60,
    "max": 80,
    "unit": "kg",
-   "date": "2026-11-14",
-   "source": "news"
+   "date": null,
+   "source": "estimate"
   },
   "pepe": {
    "min": 25,
    "max": 30,
    "unit": "kg",
-   "date": "2026-11-14",
-   "source": "news"
+   "date": null,
+   "source": "estimate"
   },
   "kacha_kola": {
    "min": 40,
    "max": 40,
    "unit": "hali",
-   "date": "2026-11-14",
-   "source": "news"
+   "date": null,
+   "source": "estimate"
   },
   "gajor": {
    "min": 120,
    "max": 130,
    "unit": "kg",
-   "date": "2026-11-14",
-   "source": "news"
+   "date": null,
+   "source": "estimate"
   },
   "mula": {
    "min": 40,
    "max": 60,
    "unit": "kg",
-   "date": "2026-11-14",
-   "source": "news"
+   "date": null,
+   "source": "estimate"
   },
   "kumra": {
    "min": 40,
    "max": 50,
    "unit": "kg",
-   "date": "2026-11-14",
-   "source": "news"
+   "date": null,
+   "source": "estimate"
   },
   "chal_kumra": {
    "min": 50,
@@ -180,22 +180,22 @@
    "min": 40,
    "max": 50,
    "unit": "kg",
-   "date": "2026-11-14",
-   "source": "news"
+   "date": null,
+   "source": "estimate"
   },
   "kochur_loti": {
    "min": 80,
    "max": 80,
    "unit": "kg",
-   "date": "2026-11-14",
-   "source": "news"
+   "date": null,
+   "source": "estimate"
   },
   "capsicum": {
    "min": 300,
    "max": 300,
    "unit": "kg",
-   "date": "2026-11-14",
-   "source": "news"
+   "date": null,
+   "source": "estimate"
   },
   "misti_alu": {
    "min": 40,
@@ -243,36 +243,36 @@
    "min": 15,
    "max": 20,
    "unit": "bundle",
-   "date": "2026-11-14",
-   "source": "news"
+   "date": null,
+   "source": "estimate"
   },
   "kolmi": {
    "min": 10,
    "max": 20,
    "unit": "bundle",
-   "date": "2026-11-14",
-   "source": "news"
+   "date": null,
+   "source": "estimate"
   },
   "pui": {
    "min": 30,
    "max": 40,
    "unit": "bundle",
-   "date": "2026-11-14",
-   "source": "news"
+   "date": null,
+   "source": "estimate"
   },
   "palong": {
    "min": 25,
    "max": 25,
    "unit": "bundle",
-   "date": "2026-11-14",
-   "source": "news"
+   "date": null,
+   "source": "estimate"
   },
   "data": {
    "min": 20,
    "max": 20,
    "unit": "bundle",
-   "date": "2026-11-14",
-   "source": "news"
+   "date": null,
+   "source": "estimate"
   },
   "laushak": {
    "min": 30,
@@ -334,8 +334,8 @@
    "min": 350,
    "max": 400,
    "unit": "kg",
-   "date": "2026-11-14",
-   "source": "news"
+   "date": null,
+   "source": "estimate"
   },
   "komola": {
    "min": 350,
@@ -348,8 +348,8 @@
    "min": 350,
    "max": 450,
    "unit": "kg",
-   "date": "2026-11-14",
-   "source": "news"
+   "date": null,
+   "source": "estimate"
   },
   "angur": {
    "min": 450,
@@ -390,8 +390,8 @@
    "min": 150,
    "max": 220,
    "unit": "piece",
-   "date": "2026-11-14",
-   "source": "news"
+   "date": null,
+   "source": "estimate"
   },
   "anaros": {
    "min": 40,
@@ -404,8 +404,8 @@
    "min": 40,
    "max": 50,
    "unit": "kg",
-   "date": "2026-11-14",
-   "source": "news"
+   "date": null,
+   "source": "estimate"
   },
   "boroi": {
    "min": 100,
