@@ -6,15 +6,35 @@ jobs:
     timeout-minutes: 8
     steps:
       - name: Reachability
+        shell: bash
         run: |
-          for u in https://tcb.gov.bd/pages/daily-rmps https://tcb.gov.bd/ http://tcb.gov.bd/ https://market.dam.gov.bd/market_daily_price_report https://dam.gov.bd/; do
-            echo "=== $u"; curl -sS -o /tmp/out -w "code=%{http_code} ip=%{remote_ip} time=%{time_total}\n" --max-time 30 -A "Mozilla/5.0" "$u" 2>&1 | tail -2; head -c 300 /tmp/out 2>/dev/null; echo
+          set +e
+          for u in https://tcb.gov.bd/pages/daily-rmps https://market.dam.gov.bd/market_daily_price_report https://dam.gov.bd/; do
+            echo "=== $u"; rm -f /tmp/out; curl -sS -o /tmp/out -w "code=%{http_code} ip=%{remote_ip}\n" --max-time 30 -A "Mozilla/5.0" "$u" 2>&1 | tail -2; head -c 200 /tmp/out 2>/dev/null; echo
           done
-          echo "=== TLS detail tcb"; curl -sv --max-time 20 https://tcb.gov.bd/ -o /dev/null 2>&1 | grep -Ei "SSL|certificate|connect|error" | head -12
-          echo "=== insecure tcb listing (diagnostic only)"; curl -sk --max-time 30 -A "Mozilla/5.0" https://tcb.gov.bd/pages/daily-rmps -o /tmp/tcb.html -w "code=%{http_code}\n"; grep -oiE 'href="[^"]+\.(xlsx|xls|pdf)"' /tmp/tcb.html | head -8; grep -oiE 'href="[^"]*daily[^"]*"' /tmp/tcb.html | head -8
-      - name: DAM scripts
+      - name: Complete TCB chain via AIA
+        shell: bash
         run: |
+          set +e
+          echo | openssl s_client -connect tcb.gov.bd:443 -servername tcb.gov.bd -showcerts 2>/dev/null | awk '/BEGIN CERT/,/END CERT/' > /tmp/served.pem
+          grep -c "BEGIN CERT" /tmp/served.pem
+          AIA=$(openssl x509 -in /tmp/served.pem -noout -text | grep -A2 "Authority Information Access" | grep -oE "CA Issuers - URI:[^ ]+" | sed 's/CA Issuers - URI://')
+          echo "AIA=$AIA"
+          curl -sS --max-time 20 "$AIA" -o /tmp/inter.der && (openssl x509 -inform DER -in /tmp/inter.der -out /tmp/inter.pem 2>/dev/null || cp /tmp/inter.der /tmp/inter.pem)
+          openssl x509 -in /tmp/inter.pem -noout -subject -issuer
+          cat /etc/ssl/certs/ca-certificates.crt /tmp/inter.pem > /tmp/bundle.pem
+          curl -sS --cacert /tmp/bundle.pem --max-time 30 -A "Mozilla/5.0" https://tcb.gov.bd/pages/daily-rmps -o /tmp/tcb.html -w "with chain: code=%{http_code}\n"
+          grep -oiE 'href="[^"]+\.(xlsx|xls|pdf)"' /tmp/tcb.html | head -6
+          grep -oiE 'href="[^"]*(rmp|daily|price|bazar)[^"]*"' /tmp/tcb.html | sort -u | head -12
+          grep -oiE '<a[^>]+>[^<]{0,80}' /tmp/tcb.html | grep -iE 'xls|pdf|দৈনিক|বাজার' | head -10
+      - name: DAM scripts
+        shell: bash
+        run: |
+          set +e
           curl -sS --max-time 30 -A "Mozilla/5.0" https://market.dam.gov.bd/market_daily_price_report -o /tmp/dam.html
           grep -oiE '<script[^>]+src="[^"]+"' /tmp/dam.html | head -20
-          grep -oiE "(url\s*:\s*['\"][^'\"]+['\"]|\\$\.(get|post|ajax)\([^)]{0,120})" /tmp/dam.html | head -30
-          grep -oiE '(action|data-url|href)="[^"]*(report|price|ajax|get)[^"]*"' /tmp/dam.html | sort -u | head -40
+          grep -oiE "url\s*:\s*['\"][^'\"]+['\"]" /tmp/dam.html | sort -u | head -30
+          grep -oiE "\\$\.(get|post|ajax|getJSON)\(['\"][^'\"]+" /tmp/dam.html | sort -u | head -20
+          grep -oiE "(fetch|axios\.(get|post))\(['\"\`][^'\"\`]+" /tmp/dam.html | sort -u | head -20
+          grep -oiE '<form[^>]*>' /tmp/dam.html | head -5
+          grep -oiE 'name="_token"[^>]*' /tmp/dam.html | head -2
