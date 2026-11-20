@@ -5,17 +5,12 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 8
     steps:
-      - name: DAM page internals
+      - name: DAM ajax flow
         shell: bash
         run: |
           set +e
           B=https://market.dam.gov.bd
-          curl -sS --max-time 40 -A "Mozilla/5.0" $B/market_daily_price_report -o /tmp/dam.html
-          sed -n '478,540p' /tmp/dam.html | sed 's/^[ \t]*//' | grep -v '^$' | cut -c1-200
-          echo "--- tail scripts"; awk 'NR>540' /tmp/dam.html | grep -vE '^\s*$' | grep -iE "script|function|\\$\\(|post|get|url|child" | cut -c1-220 | head -60
-          echo "--- functions.js child handling"
-          curl -sS --max-time 30 -A "Mozilla/5.0" "$B/global/js/functions.js?v=2.1" -o /tmp/f.js; wc -c /tmp/f.js
-          grep -nE "child|ajax|\\.post|\\.get|url" /tmp/f.js | cut -c1-240 | head -40
-          echo "--- larger district report"
-          curl -sS --max-time 40 -A "Mozilla/5.0" $B/larger_district_retail_price_report -o /tmp/ld.html; wc -c /tmp/ld.html
-          grep -nE "<form|<select|<option|name=\"date|type=\"submit\"" /tmp/ld.html | cut -c1-200 | head -40
+          curl -sS --max-time 30 -A "Mozilla/5.0" "$B/global/js/functions.js?v=2.1" -o /tmp/f.js
+          grep -nE "function (district|subdistrict|market)_ajax_call\b|function (district|subdistrict|market)_ajax_call\(" /tmp/f.js
+          for f in district_ajax_call subdistrict_ajax_call market_ajax_call; do L=$(grep -nE "function $f\(" /tmp/f.js | head -1 | cut -d: -f1); [ -n "$L" ] && sed -n "${L},$((L+22))p" /tmp/f.js | cut -c1-200; echo ----; done
+          sed -n '215,232p' /tmp/f.js
