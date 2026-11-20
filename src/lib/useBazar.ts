@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { BN, BY, CATS, GUIDE, IMG, ITEMS, ROUNDS, UNIT, UNIT_BN, freshness, qtyText, tk, tkBn } from './data'
 
 export function useBazar(ver = 0) {
@@ -10,7 +10,11 @@ export function useBazar(ver = 0) {
   const [scores, setScores] = useState<number[]>([])
   const [done, setDone] = useState(false)
   const [copied, setCopied] = useState(false)
-  const [list, setList] = useState<Record<string, number>>({ potato: 0.5, onion: 0.5, cauliflower: 1, chili: 0.25, lalshak: 2 })
+  const [list, setList] = useState<Record<string, number>>(() => {
+    try { const saved = JSON.parse(localStorage.getItem('tcn-list') || 'null'); if (saved && typeof saved === 'object') return Object.fromEntries(Object.entries(saved).filter(([id, n]) => BY[id] && typeof n === 'number' && n > 0)) as Record<string, number> } catch { /* private mode */ }
+    return { potato: 0.5, onion: 0.5, cauliflower: 1, chili: 0.25, lalshak: 2 }
+  })
+  useEffect(() => { try { localStorage.setItem('tcn-list', JSON.stringify(list)) } catch { /* private mode */ } }, [list])
 
   const step = (id: string) => (BY[id].unit === 'kg' ? 0.25 : 1)
   const add = (id: string) => BY[id].off ? undefined : setList((l) => ({ ...l, [id]: l[id] ? l[id] + step(id) : BY[id].unit === 'kg' ? 0.5 : 1 }))
@@ -47,7 +51,7 @@ export function useBazar(ver = 0) {
   let tlo = 0, thi = 0
   const rows = Object.entries(list).map(([id, n]) => {
     const i = BY[id]; const a = Math.round(i.min * n), b = Math.round(i.max * n); tlo += a; thi += b
-    return { id, bn: BN[id], name: i.name, local: i.local, img: IMG[id], qty: qtyText(i, n), line: tk(a, b) }
+    return { id, bn: BN[id], name: i.name, local: i.local, img: IMG[id], qty: qtyText(i, n), line: tk(a, b), n }
   })
   const carry = Math.ceil((thi * 1.1) / 50) * 50
   const guide = GUIDE.map((g) => ({ ...g, img: IMG[g.id] }))
@@ -55,7 +59,7 @@ export function useBazar(ver = 0) {
   const pick = (ids: string[]) => ids.map((id) => { const i = BY[id]; return { ...i, bn: BN[id], priceBn: tkBn(i.min, i.max), unitBn: UNIT_BN[i.unit], img: IMG[id], price: tk(i.min, i.max), per: UNIT[i.unit], inList: !!list[id] } })
 
   return {
-    q, setQ, cat, setCat, cats: CATS, board, game, add, dec, drop,
+    q, setQ, cat, setCat, cats: CATS, board, game, add, dec, drop, setAll: (l: Record<string, number>) => setList(l), raw: list,
     list: { rows, totalBn: tkBn(tlo, thi), carryBn: `${carry}`, total: tk(tlo, thi), lo: tlo, hi: thi, carry: `Tk ${carry}`, empty: rows.length === 0 },
     guide, seasonal, pick,
   }

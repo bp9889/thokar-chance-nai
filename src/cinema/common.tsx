@@ -136,7 +136,7 @@ export function KashemChat({ b, skin, id }: { b: Bazar; skin: ChatSkin; id: stri
 export type ListSkin = { page: string; card: string; guideCard: string; title: (s: string) => React.ReactNode; muted: string; accent: string; btn: string; rowLine: string; enter: string }
 
 /** Page 2: Birot (half-a-kilo guide) + Amar bazar list. */
-export function ListPage({ b, skin, goHome }: { b: Bazar; skin: ListSkin; goHome: () => void }) {
+export function ListPage({ b, skin, goHome, share, extra }: { b: Bazar; skin: ListSkin; goHome: () => void; share?: React.ReactNode; extra?: React.ReactNode }) {
   const lo = useCountUp(b.list.lo), hi = useCountUp(b.list.hi)
   const carry = useCountUp(Number(b.list.carry.replace(/\D/g, '')))
   return (
@@ -164,6 +164,7 @@ export function ListPage({ b, skin, goHome }: { b: Bazar; skin: ListSkin; goHome
             <div className="text-right"><p className={skin.muted}>Shathe rakhun (carry)</p><p className={cn('text-5xl font-extrabold tabular-nums', skin.accent)} style={{ fontFamily: BN, fontVariationSettings: '"wdth" 75' }}>Tk {carry}</p></div>
           </div>
           <p className={cn('mt-2 text-sm', skin.muted)}>A little above the range, in case your shop charges more.</p>
+          {share}
         </section>
         <section className={cn('rounded-[10px] p-6 md:p-8', skin.guideCard, skin.enter)} style={{ animationDelay: '120ms' }}>
           {skin.title('বিরতি')}
@@ -181,6 +182,7 @@ export function ListPage({ b, skin, goHome }: { b: Bazar; skin: ListSkin; goHome
           </ul>
         </section>
       </div>
+      {extra && <div className="mt-8">{extra}</div>}
     </div>
   )
 }

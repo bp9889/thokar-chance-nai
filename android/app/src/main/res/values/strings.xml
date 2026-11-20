@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Thokar Chance Nai</string>
+    <string name="loading">Dam anchi… Ajker bazar-er dam</string>
+    <string name="offline_title">Net nai · No internet</string>
+    <string name="offline_body">Mobile data ba Wi-Fi on kore abar try korun.\nTurn on mobile data or Wi-Fi and try again.</string>
+    <string name="retry">Abar try korun</string>
+</resources>

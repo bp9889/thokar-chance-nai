@@ -257,8 +257,15 @@ async function main() {
       const got = pick(src.rows, id)
       if (!got) continue
       if (!sane(prev, got)) { log(`skip ${id}: ${JSON.stringify(got)} looks wrong vs ${prev.min}-${prev.max}`); continue }
-      if (prev.min !== got.min || prev.max !== got.max || prev.date !== src.date) changed++
+      // TCB rows also carry last week's, last month's and last year's range: today min/max, week min/max,
+      // month min/max, month change %, year min/max, year change %.
+      const raw = src.name === 'TCB' ? findRow(src.rows, id)?.[1] || [] : []
+      const pair = (a, b) => (a > 0 && b > 0 && b >= a && sane(got, { min: a, max: b }) ? [a, b] : undefined)
+      const hist = { week: pair(raw[2], raw[3]), month: pair(raw[4], raw[5]), year: pair(raw[7], raw[8]) }
+      const histNew = JSON.stringify(hist), histOld = JSON.stringify({ week: prev.week, month: prev.month, year: prev.year })
+      if (prev.min !== got.min || prev.max !== got.max || prev.date !== src.date || (raw.length && histNew !== histOld)) changed++
       Object.assign(prev, got, { date: src.date, source: src.name })
+      if (raw.length) { delete prev.week; delete prev.month; delete prev.year; for (const [k, v] of Object.entries(hist)) if (v) prev[k] = v }
       touched.push(`${id}=${got.min}-${got.max} (${src.name})`)
     }
   }

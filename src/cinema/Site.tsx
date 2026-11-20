@@ -4,9 +4,8 @@ import { IMG, ITEMS, applyLive, type Live } from '@/lib/data'
 import { cn } from '@/lib/utils'
 import { BN, POSTER, extrude, halftone, star, KashemChat, ListPage, type ChatSkin, type ListSkin, type Page } from './common'
 import { FX_MS, PageFx } from './transitions'
-import { ModeSwitch, Sides, THEME_CSS, useMode, type BoardV, type Demo } from './theme'
-import type { DayV } from './desh'
-import { BOARD_CSS, ItemDialog, JhuriBoard, PosterWall, SeatBoard, seatNo } from './boards'
+import { ModeSwitch, Sky, THEME_CSS, useMode } from './theme'
+import { AppCard, BudgetMode, OfflineNote, SeasonCalendar, ShareList, ShostaBoard, ThokseNaki, Trend } from './features'
 
 const chat: ChatSkin = {
   wrap: 'bg-[#F4E3C1] text-[#1A0B07] shadow-[8px_8px_0_var(--deep)]', seller: 'bg-white text-[#1A0B07] ring-2 ring-[#1A0B07]', me: 'bg-[#C4161C] text-[#FFF1D6] ring-2 ring-[#1A0B07]',
@@ -55,16 +54,15 @@ function Caution({ className, updated }: { className?: string; updated: string |
         <svg viewBox="0 0 100 90" className="h-full w-full"><path d="M50 4 96 86H4z" fill="#1A0B07" /><path d="M50 18 84 80H16z" fill="#FFD21F" /><path d="M46 36h8l-1.5 26h-5z" fill="#1A0B07" /><circle cx="50" cy="71" r="4.5" fill="#1A0B07" /></svg>
       </div>
       <div>
-        <p className="text-2xl leading-none md:text-3xl" style={{ fontFamily: POSTER }}>SAVDHAN! Dam ektu upor-nich hobei</p>
-        <p className="mt-2 max-w-[62ch] text-lg leading-snug">Bhai, ekhane ja dekhchen ta Dhaka-r bazar-er <b>usual range</b>. Area, quality ar shokal-bikal bhede dam ektu edik-odik hoy, oita normal. Kintu mama jodi range theke onek beshi chay? Tokhon shundor kore bolen: <b>"Eto na ভাই."</b></p>
-        <p className="mt-2 text-sm opacity-80">Alu, peyaj, rosun, ada, kacha morich, begun, shosha, lebu ar khejur-er dam roj auto-update hoy TCB-er Dhaka report theke{updated ? ` (last checked ${updated})` : ''}. Baki gula "approx.", mane rough estimate. "Update pending" mane 7 din er beshi fresh report nai.</p>
+        <p className="text-2xl leading-none md:text-3xl" style={{ fontFamily: POSTER }}>SAVDHAN! Dam ektu upor nich hobei :3</p>
+        <p className="mt-2 max-w-[62ch] text-lg leading-snug">Bhai, ekhane ja dekhchen ta Dhaka-r bazar er <b>usual range</b>. Area, quality ar shokal bikal bhede dam ektu edik odik hoy, oita normal. Kintu MAMA jodi range theke onek beshi chay? Tokhon shundor kore boilen: <b>"Eto na MAMA PLSS."</b></p>
+        <p className="mt-2 text-sm opacity-80">Alu, peyaj, rosun, ada, kacha morich, begun, shosha, lebu ar khejur er dam daily auto update hoy TCB er Dhaka report theke. Baki gula "approx.", mane rough estimate. "Update pending" mane 7 din er beshi fresh report nai.</p>
       </div>
     </aside>
   )
 }
 
-export default function Site({ demo = 3, day = 'tar', board = 'seat', picker }: { demo?: Demo; day?: DayV; board?: BoardV; picker?: React.ReactNode }) {
-  const [dlg, setDlg] = useState<string | null>(null)
+export default function Site() {
   const { mode, toggle } = useMode()
   const [ver, setVer] = useState(0)
   const [updated, setUpdated] = useState<string | null>(null)
@@ -74,16 +72,16 @@ export default function Site({ demo = 3, day = 'tar', board = 'seat', picker }: 
   const b = useBazar(ver)
   const { page, phase, go } = usePage()
   const [sel, setSel] = useState<string>('potato')
-  useReveal(`${page}-${b.cat}-${b.q}-${board}`)
+  useReveal(`${page}-${b.cat}-${b.q}-${ver}`)
   const cur = b.board.find((i) => i.id === sel) ?? b.board[0]
   const pick = (id: string) => { b.setQ(''); b.setCat('all'); setSel(id); document.getElementById('now-cholche')?.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' }) }
   const fruitCount = ITEMS.filter((i) => i.cat === 'fruit').length, vegCount = ITEMS.length - fruitCount
 
   return (
-    <div className="tcn relative min-h-[100dvh] overflow-x-clip" data-d={demo} data-m={mode} style={{ fontFamily: BN }}>
-      <style>{THEME_CSS + BOARD_CSS}</style>
-      <Sides demo={demo} ver={ver} onPick={pick} day={day} />
-      {picker}
+    <div className="tcn relative min-h-[100dvh] overflow-x-clip" data-d="3" data-m={mode} style={{ fontFamily: BN }}>
+      <style>{THEME_CSS}</style>
+      <Sky />
+      <OfflineNote updated={updated} />
       <style>{`
         @keyframes pw-slap{0%{opacity:0;scale:1.12;rotate:3deg}60%{opacity:1;scale:.985;rotate:-.6deg}100%{opacity:1;scale:1;rotate:0deg}}
         @keyframes pw-shine{0%{translate:-120% 0;opacity:1}85%{opacity:1}100%{translate:420% 0;opacity:0}}
@@ -117,8 +115,8 @@ export default function Site({ demo = 3, day = 'tar', board = 'seat', picker }: 
       <header className="relative z-10 mx-auto flex max-w-[1180px] flex-wrap items-center justify-between gap-3 px-4 pt-5 md:px-6">
         <button type="button" onClick={() => go('home')} className="cursor-pointer text-xl md:text-2xl" style={{ fontFamily: POSTER, color: 'var(--brand)', transition: 'color 400ms ease' }}>THOKAR <span style={{ fontFamily: BN }}>চান্স</span> NAI</button>
         <nav aria-label="Main" className="flex flex-wrap items-center gap-2 text-lg">
-          {page === 'home' && <><a href="#dor-dam" className="rounded-full px-4 py-2 hover:bg-[var(--hover)]">Dor-দাম</a><a href="#now-cholche" className="rounded-full px-4 py-2 hover:bg-[var(--hover)]">Now চলছে</a></>}
-          <ModeSwitch demo={demo} mode={mode} toggle={toggle} />
+          {page === 'home' && <><a href="#dor-dam" className="rounded-full px-4 py-2 hover:bg-[var(--hover)]">Dor-দাম</a><a href="#thokse-naki" className="hidden rounded-full px-4 py-2 hover:bg-[var(--hover)] sm:inline">Thokse naki?</a><a href="#now-cholche" className="rounded-full px-4 py-2 hover:bg-[var(--hover)]">Now চলছে</a></>}
+          <ModeSwitch mode={mode} toggle={toggle} />
           <button type="button" onClick={() => go(page === 'home' ? 'list' : 'home')} className="kc-press pw-wig flex h-11 cursor-pointer items-center gap-2 rounded-[4px] bg-[#FFD21F] px-5 font-bold text-[#1A0B07] shadow-[3px_3px_0_#1A0B07]">
             {page === 'home' ? <>Amar list <span key={b.list.rows.length} className="kc-stamp grid size-7 place-items-center rounded-full bg-[#C4161C] text-sm text-[#FFD21F]">{b.list.rows.length}</span></> : 'Back to the wall'}
           </button>
@@ -166,12 +164,16 @@ export default function Site({ demo = 3, day = 'tar', board = 'seat', picker }: 
             </div>
           </section>
 
+          <ShostaBoard onPick={pick} />
+
           {/* DOR-DAM */}
           <section id="dor-dam" className="mx-auto max-w-[980px] scroll-mt-6 px-4 pb-24 md:px-6">
             <div className="rv rv-brush"><h2 style={extrude('clamp(2.8rem,7vw,5rem)', '#F4E3C1', '#C4161C')}>Dor-দাম <span style={{ fontFamily: POSTER, fontSize: '.5em', WebkitTextStroke: '0.03em #1A0B07' }}>with Kashem bhai</span></h2></div>
             <p className="mt-3 mb-8 max-w-[54ch] text-lg text-[var(--soft)]">A comic-strip bargain. He names the item, you say your price, he tells you if you got it right. Kashem bhai is a made-up character, kintu tar dor-dam ekdom real.</p>
             <div className="rv rv-slap"><KashemChat b={b} skin={chat} id="tcn-guess" /></div>
           </section>
+
+          <ThokseNaki />
 
           {/* NOW CHOLCHE */}
           <section id="now-cholche" className="mx-auto max-w-[1180px] scroll-mt-6 px-4 pb-32 md:px-6">
@@ -188,11 +190,7 @@ export default function Site({ demo = 3, day = 'tar', board = 'seat', picker }: 
               </div>
             </div>
             {b.board.length === 0 && <p className="mt-8 text-xl">"{b.q}" naam e kono show nai. Try alu ba malta.</p>}
-            {board === 'seat' && <SeatBoard b={b} sel={sel} setSel={setSel} open={setDlg} />}
-            {board === 'poster' && <PosterWall b={b} open={setDlg} />}
-            {board === 'jhuri' && <JhuriBoard b={b} open={setDlg} />}
-            <ItemDialog i={b.board.find((i) => i.id === dlg) ?? null} b={b} seat={board === 'seat' && dlg ? seatNo(b.board, dlg) : undefined} onClose={() => setDlg(null)} />
-            {board === 'list' && cur && (
+            {cur && (
               <div className="mt-10 grid gap-8 md:grid-cols-[1fr_1.05fr]">
                 <ul key={`${b.cat}-${b.q}`} className="rv rv-rows" aria-label="Today's items">
                   {b.board.map((i, k) => (
@@ -203,6 +201,7 @@ export default function Site({ demo = 3, day = 'tar', board = 'seat', picker }: 
                         <span className="flex flex-col items-end">
                           <span className={cn('text-lg whitespace-nowrap tabular-nums', i.fresh.stale ? 'opacity-50 line-through decoration-1' : 'opacity-85')}>{i.price}</span>
                           {i.available && <span className={cn('text-xs whitespace-nowrap', i.fresh.stale ? 'rounded-[3px] bg-[#FFD21F] px-1.5 font-bold text-[#1A0B07]' : 'opacity-60')}>{i.fresh.label}</span>}
+                          <Trend i={i} className="mt-0.5" />
                         </span>
                       </button>
                       {cur.id === i.id && (
@@ -227,6 +226,7 @@ export default function Site({ demo = 3, day = 'tar', board = 'seat', picker }: 
                         <div>
                           <p className="text-[3rem] leading-none font-extrabold text-[#FFD21F]" style={{ fontVariationSettings: '"wdth" 75', WebkitTextStroke: '1.5px #1A0B07' }}>{cur.available ? cur.price : 'Ekhon season na'}</p>
                           <p>{cur.per}{cur.available && <> · <span className={cn(cur.fresh.stale && 'rounded-[3px] bg-[#FFD21F] px-1.5 font-bold text-[#1A0B07]')}>{cur.fresh.label}</span></>}</p>
+                          <p className="mt-1 flex flex-wrap gap-1.5"><Trend i={cur} /><Trend i={cur} vs="month" /></p>
                         </div>
                         {cur.available && <button type="button" onClick={() => b.add(cur.id)} className="kc-press pw-wig h-12 cursor-pointer rounded-[4px] bg-[#FFD21F] px-5 text-lg font-bold text-[#1A0B07] shadow-[3px_3px_0_#1A0B07]">{cur.inList ? 'In list, aro din' : '+ Add to list'}</button>}
                       </div>
@@ -236,12 +236,14 @@ export default function Site({ demo = 3, day = 'tar', board = 'seat', picker }: 
               </div>
             )}
           </section>
+          <SeasonCalendar onPick={pick} />
         </main>
       ) : (
-        <div className="relative z-[1]"><ListPage b={b} skin={list} goHome={() => go('home')} /></div>
+        <div className="relative z-[1]"><ListPage b={b} skin={list} goHome={() => go('home')} share={<ShareList b={b} />} extra={<BudgetMode b={b} />} /></div>
       )}
 
       <footer className="relative z-[1] mx-auto max-w-[1180px] px-4 pb-28 md:px-6">
+        <AppCard />
         <div className="flex flex-col gap-4 border-t border-[var(--line)] pt-8 md:flex-row md:items-end md:justify-between">
           <p className="max-w-[70ch] text-sm text-[var(--soft)]">Dorshokder jonno special ঘোষণা: the main bazar items update automatically every day from TCB's Dhaka market report; the rest are marked approx. They are averages, so your shop may be a little higher or lower. Every price shows when it was last updated.</p>
           <p className="text-xl" style={{ fontFamily: POSTER, color: 'var(--brand)' }}>THOKAR <span style={{ fontFamily: BN }}>চান্স</span> NAI</p>

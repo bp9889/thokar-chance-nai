@@ -3,7 +3,7 @@ export const IMG: Record<string, string> = {}
 for (const [p, url] of Object.entries(svgs)) IMG[p.split('/').pop()!.replace('.svg', '')] = url
 
 export type Unit = 'kg' | 'piece' | 'bundle' | 'hali' | 'g100'
-export type Item = { id: string; name: string; local: string; cat: 'veg' | 'leaf' | 'fruit' | 'spice'; unit: Unit; min: number; max: number; src: boolean; season: boolean; off: string; date?: string | null; source?: string }
+export type Item = { id: string; name: string; local: string; cat: 'veg' | 'leaf' | 'fruit' | 'spice'; unit: Unit; min: number; max: number; src: boolean; season: boolean; off: string; date?: string | null; source?: string; week?: [number, number]; month?: [number, number]; year?: [number, number] }
 
 // Preview data. src:true = Dhaka market reports, 13 to 16 Nov 2026. src:false = placeholder estimate.
 export const ITEMS: Item[] = [
@@ -122,13 +122,13 @@ export const CAT_BN: Record<string, string> = { all: 'সব', season: 'এই �
 
 /** Dhaka "today" as YYYY-MM-DD. */
 export const dhakaToday = () => new Date(Date.now() + 6 * 3600e3).toISOString().slice(0, 10)
-export type Live = { updated: string; sources: Record<string, { url: string; date: string }>; items: Record<string, { min: number; max: number; date: string | null; source: string }> }
+export type Live = { updated: string; sources: Record<string, { url: string; date: string }>; items: Record<string, { min: number; max: number; date: string | null; source: string; week?: [number, number]; month?: [number, number]; year?: [number, number] }> }
 /** Merge prices.json into the item table. */
 export function applyLive(live: Live) {
   for (const [id, v] of Object.entries(live.items)) {
     const it = BY[id]
     if (!it || it.off) continue
-    it.min = v.min; it.max = v.max; it.date = v.date; it.source = v.source; it.src = v.source !== 'estimate'
+    it.min = v.min; it.max = v.max; it.date = v.date; it.source = v.source; it.src = v.source !== 'estimate'; it.week = v.week; it.month = v.month; it.year = v.year
   }
 }
 /** Freshness label for an item: today, n days ago, update pending (> 7 days), or approx. */
@@ -137,4 +137,13 @@ export function freshness(date?: string | null) {
   const days = Math.round((Date.parse(dhakaToday()) - Date.parse(date)) / 864e5)
   if (days > 7) return { label: 'Update pending', stale: true, approx: false, days }
   return { label: days <= 0 ? 'Aj update' : days === 1 ? 'Gotokal update' : `${days} din age update`, stale: false, approx: false, days }
+}
+
+/** Change against an earlier range, by the middle of each range. */
+export function change(i: Item, vs: 'week' | 'month' | 'year') {
+  const p = i[vs]
+  if (!p || i.off) return null
+  const now = (i.min + i.max) / 2, then = (p[0] + p[1]) / 2
+  const diff = Math.round(now - then)
+  return { diff, pct: Math.round((diff / then) * 100), dir: diff > 0 ? 'up' : diff < 0 ? 'down' : 'same' as 'up' | 'down' | 'same' }
 }
