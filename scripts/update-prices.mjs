@@ -14,6 +14,7 @@ import * as XLSX from '@e965/xlsx'
 
 const FILE = path.resolve('public/prices.json')
 const DEBUG = process.env.DEBUG === '1'
+const DRY = process.env.DRY === '1' // print what would change, write nothing
 const log = (...a) => console.log('[prices]', ...a)
 const dbg = (...a) => DEBUG && console.log('[debug]', ...a)
 
@@ -137,25 +138,68 @@ async function fromTCB() {
 }
 
 // ---------------- DAM ----------------
-// The DAM portal's daily report is a form (division, district, upazila, market, price type, date).
-// This tries the Dhaka markets it can discover; set DEBUG=1 to print the form so the mapping can be tuned.
+// The DAM portal's daily report is a POST form (division → district → upazila → market, price type, date)
+// whose dropdowns load over AJAX. Walk that chain for Dhaka district, then ask for retail (খুচরা) prices.
+const opts = (html) => [...html.matchAll(/<option[^>]*value=["']?([^"'>]+?)["']?\s*>([^<]*)</gi)].map((m) => [m[1].trim(), toLatin(m[2]).replace(/&nbsp;/g, ' ').trim()]).filter(([v]) => v && v !== '0')
 async function fromDAM() {
   const base = process.env.DAM_BASE || 'https://market.dam.gov.bd/'
-  const html = await get(base + 'market_daily_price_report')
-  const forms = [...html.matchAll(/<form[^>]*action="([^"]*)"[^>]*>/gi)].map((m) => m[1])
-  const selects = [...html.matchAll(/<select[^>]*name="([^"]+)"[^>]*>([\s\S]*?)<\/select>/gi)].map((m) => ({ name: m[1], options: [...m[2].matchAll(/<option[^>]*value="([^"]*)"[^>]*>([^<]*)</gi)].map((o) => [o[1], o[2].trim()]).slice(0, 40) }))
-  const scripts = [...html.matchAll(/(url\s*:\s*['"][^'"]+['"]|\.(?:get|post)\(\s*['"][^'"]+['"])/gi)].map((m) => m[1])
-  dbg('DAM forms', forms, 'selects', JSON.stringify(selects).slice(0, 3000), 'ajax', scripts.slice(0, 20))
-  // Rows from any price table already on the page (the portal shows recent prices for common items).
-  const rows = []
-  for (const tr of html.match(/<tr[\s\S]*?<\/tr>/gi) || []) {
-    const cells = [...tr.matchAll(/<t[dh][^>]*>([\s\S]*?)<\/t[dh]>/gi)].map((m) => m[1].replace(/<[^>]+>/g, ' ').trim())
-    const label = cells.find((c) => /[ঀ-৿]/.test(c))
-    if (label) rows.push([norm(label), numbersIn(cells.slice(cells.indexOf(label) + 1))])
+  const page = base + 'market_daily_price_report'
+  const UA = { 'user-agent': 'Mozilla/5.0 (thokar-chance-nai price bot; +https://github.com/bp9889/thokar-chance-nai)' }
+  const first = await fetch(page, { headers: UA, signal: AbortSignal.timeout(45000) })
+  const cookie = (first.headers.getSetCookie?.() || []).map((c) => c.split(';')[0]).join('; ')
+  const html = await first.text()
+  const token = html.match(/name="csrf_webspice_tkn"\s+value="([^"]+)"/)?.[1] || ''
+  const post = async (url, pairs) => {
+    const body = new URLSearchParams([['csrf_webspice_tkn', token], ...pairs])
+    const r = await fetch(url, { method: 'POST', body, headers: { ...UA, cookie, 'x-requested-with': 'XMLHttpRequest', 'content-type': 'application/x-www-form-urlencoded; charset=UTF-8', referer: page }, signal: AbortSignal.timeout(60000) })
+    if (!r.ok) throw new Error(`${r.status} ${url}`)
+    return r.text()
   }
-  dbg('DAM rows', rows.slice(0, 20))
-  if (!rows.length) throw new Error('DAM: no price rows found on the page yet')
-  return { name: 'DAM', url: base + 'market_daily_price_report', date: today(), rows }
+  const many = (key, vals) => vals.map((v) => [key, v])
+  const divs = opts(await post(base + 'get_division_list_ban', []))
+  const div = divs.find(([, n]) => n.startsWith('ঢাকা'))
+  const dists = div ? opts(await post(base + 'get_district_list_ban', [['data_id[]', div[0]]])) : []
+  const dist = dists.find(([, n]) => n === 'ঢাকা')
+  const subs = dist ? opts(await post(base + 'get_subdistrict_list_ban', [['data_id[]', dist[0]]])) : []
+  const markets = subs.length ? opts(await post(base + 'get_market_list_ban', many('data_id[]', subs.map((x) => x[0])))) : []
+  dbg('DAM chain', { token: !!token, cookie: !!cookie, div, dist, subs: subs.map((x) => x[1]), markets: markets.map((x) => x[1]) })
+  if (!markets.length) throw new Error('DAM: could not load Dhaka markets')
+
+  // Try the last few days (reports land late in the day and skip holidays).
+  const fmts = (d) => { const [y, m, dd] = d.split('-'); return [`${dd}-${m}-${y}`, `${y}-${m}-${dd}`, `${dd}/${m}/${y}`] }
+  for (let back = 0; back < 5; back++) {
+    const d = new Date(Date.parse(today()) - back * 864e5).toISOString().slice(0, 10)
+    for (const date of fmts(d)) {
+      const out = await post(page, [
+        ['Division_id[]', div[0]], ['District_id[]', dist[0]],
+        ...many('Subdistrict_id[]', subs.map((x) => x[0])), ...many('Market_id[]', markets.map((x) => x[0])),
+        ['PriceType_id[]', '4'], ['date', date], ['filter', 'Generate Report'],
+      ])
+      const table = []
+      for (const tr of out.match(/<tr[\s\S]*?<\/tr>/gi) || []) {
+        const cells = [...tr.matchAll(/<t[dh][^>]*>([\s\S]*?)<\/t[dh]>/gi)].map((m) => toLatin(m[1].replace(/<[^>]+>/g, ' ').replace(/&nbsp;/g, ' ')).replace(/\s+/g, ' ').trim())
+        if (cells.some((c) => /[ঀ-৿]/.test(c)) && cells.some((c) => /\d/.test(c))) table.push(cells)
+      }
+      dbg(`DAM ${date}: ${out.length} bytes, ${table.length} rows`, table.slice(0, 12).map((c) => c.join(' | ')))
+      if (table.length < 5) continue
+      // Several markets per item: group by item name, take the median min and median max.
+      const by = new Map()
+      for (const cells of table) {
+        const label = cells.find((c) => /[ঀ-৿]/.test(c) && !markets.some(([, n]) => n === c))
+        if (!label) continue
+        const nums = numbersIn(cells.slice(cells.indexOf(label) + 1)).filter((n) => n > 0 && n < 5000 && !(n > 2000 && n < 2100))
+        if (nums.length < 2) continue
+        const k = norm(label)
+        if (!by.has(k)) by.set(k, [])
+        by.get(k).push([Math.min(nums[0], nums[1]), Math.max(nums[0], nums[1])])
+      }
+      const med = (a) => { const s = [...a].sort((x, y) => x - y); return s[Math.floor((s.length - 1) / 2)] }
+      const rows = [...by].map(([k, v]) => [k, [med(v.map((x) => x[0])), med(v.map((x) => x[1]))]])
+      dbg('DAM items', rows.map(([k, n]) => `${k} ${n.join('-')}`).join(' | '))
+      return { name: 'DAM', url: page, date: d, rows }
+    }
+  }
+  throw new Error('DAM: no report rows for the last 5 days')
 }
 
 // ---------------- merge ----------------
@@ -194,6 +238,7 @@ async function main() {
   log(`matched ${touched.length} items:`, touched.join(', '))
   if (!changed) { log('no new report or price changes; prices.json left as is'); return }
   data.updated = today()
+  if (DRY) { log(`dry run: ${changed} changes not written`); return }
   fs.writeFileSync(FILE, JSON.stringify(data, null, 1) + '\n')
   log(`${changed} changes written`)
   if (!results.length) process.exitCode = 0 // keep last good data; the site shows dates
