@@ -9,10 +9,13 @@ jobs:
         shell: bash
         run: |
           set +e
-          curl -sS --max-time 40 -A "Mozilla/5.0" -c /tmp/cj https://market.dam.gov.bd/market_daily_price_report -o /tmp/dam.html
-          echo "size: $(wc -c < /tmp/dam.html)"
-          grep -oiE '<script[^>]*src="[^"]+"' /tmp/dam.html
-          echo "--- inline script lines mentioning ajax/url/district/market"
-          grep -nE "ajax|url|District|district|Market_id|market_id|\.change|route\(|/get|json" /tmp/dam.html | grep -v "<link" | cut -c1-220 | head -60
-          echo "--- form"
-          grep -nE "<form|_token|type=\"submit\"|name=\"date|datepicker|PriceType|Division_id" /tmp/dam.html | cut -c1-220 | head -20
+          B=https://market.dam.gov.bd
+          curl -sS --max-time 40 -A "Mozilla/5.0" $B/market_daily_price_report -o /tmp/dam.html
+          sed -n '478,540p' /tmp/dam.html | sed 's/^[ \t]*//' | grep -v '^$' | cut -c1-200
+          echo "--- tail scripts"; awk 'NR>540' /tmp/dam.html | grep -vE '^\s*$' | grep -iE "script|function|\\$\\(|post|get|url|child" | cut -c1-220 | head -60
+          echo "--- functions.js child handling"
+          curl -sS --max-time 30 -A "Mozilla/5.0" "$B/global/js/functions.js?v=2.1" -o /tmp/f.js; wc -c /tmp/f.js
+          grep -nE "child|ajax|\\.post|\\.get|url" /tmp/f.js | cut -c1-240 | head -40
+          echo "--- larger district report"
+          curl -sS --max-time 40 -A "Mozilla/5.0" $B/larger_district_retail_price_report -o /tmp/ld.html; wc -c /tmp/ld.html
+          grep -nE "<form|<select|<option|name=\"date|type=\"submit\"" /tmp/ld.html | cut -c1-200 | head -40
