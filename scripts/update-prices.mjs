@@ -154,7 +154,7 @@ async function fromDAM() {
   const refresh = async () => { const h = await (await fetch(page, { headers: { ...UA, cookie }, signal: AbortSignal.timeout(45000) })).text(); tok = h.match(/name="csrf_webspice_tkn"\s+value="([^"]+)"/)?.[1] || tok }
   const post = async (url, pairs) => {
     const body = new URLSearchParams([['csrf_webspice_tkn', tok], ...pairs])
-    const r = await fetch(url, { method: 'POST', body, headers: { ...UA, cookie, 'x-requested-with': 'XMLHttpRequest', 'content-type': 'application/x-www-form-urlencoded; charset=UTF-8', referer: page }, signal: AbortSignal.timeout(60000) })
+    const r = await fetch(url, { method: 'POST', body, headers: { ...UA, cookie, 'x-requested-with': 'XMLHttpRequest', 'content-type': 'application/x-www-form-urlencoded; charset=UTF-8', referer: page }, signal: AbortSignal.timeout(180000) })
     if (!r.ok) throw new Error(`${r.status} ${url}`)
     return r.text()
   }
@@ -165,7 +165,8 @@ async function fromDAM() {
   const div = divs.find(([, n]) => n.startsWith('ঢাকা'))
   const dists = div ? opts(await post(base + 'get_district_list_ban', [['data_id[]', div[0]]])) : []
   const dist = dists.find(([, n]) => n === 'ঢাকা')
-  const subs = dist ? opts(await post(base + 'get_subdistrict_list_ban', [['data_id[]', dist[0]]])) : []
+  // Dhaka city only (ঢাকা সদর): Karwan Bazar, Shyambazar, Tejgaon, Mirpur-1, New Market, …
+  const subs = dist ? opts(await post(base + 'get_subdistrict_list_ban', [['data_id[]', dist[0]]])).filter(([, n]) => n.includes('সদর')) : []
   const markets = subs.length ? opts(await post(base + 'get_market_list_ban', many('data_id[]', subs.map((x) => x[0])))) : []
   dbg('DAM chain', { token: !!token, cookie: !!cookie, div, dist, subs: subs.map((x) => x[1]), markets: markets.map((x) => x[1]) })
   if (!markets.length) throw new Error('DAM: could not load Dhaka markets')
@@ -176,6 +177,7 @@ async function fromDAM() {
     const d = new Date(Date.parse(today()) - back * 864e5).toISOString().slice(0, 10)
     for (const date of fmts(d)) {
       await refresh()
+      const t0 = Date.now()
       const out = await post(page, [
         ['Division_id[]', div[0]], ['District_id[]', dist[0]],
         ...many('Subdistrict_id[]', subs.map((x) => x[0])), ...many('Market_id[]', markets.map((x) => x[0])),
@@ -186,7 +188,7 @@ async function fromDAM() {
         const cells = [...tr.matchAll(/<t[dh][^>]*>([\s\S]*?)<\/t[dh]>/gi)].map((m) => toLatin(m[1].replace(/<[^>]+>/g, ' ').replace(/&nbsp;/g, ' ')).replace(/\s+/g, ' ').trim())
         if (cells.some((c) => /[ঀ-৿]/.test(c)) && cells.some((c) => /\d/.test(c))) table.push(cells)
       }
-      dbg(`DAM ${date}: ${out.length} bytes, ${table.length} rows`, table.slice(0, 12).map((c) => c.join(' | ')))
+      dbg(`DAM ${date} (${Math.round((Date.now() - t0) / 1000)}s): ${out.length} bytes, ${table.length} rows`, table.slice(0, 12).map((c) => c.join(' | ')))
       if (DEBUG && back === 0 && date === fmts(d)[0]) {
         const txt = toLatin(out.replace(/<script[\s\S]*?<\/script>|<style[\s\S]*?<\/style>/gi, ' ').replace(/<[^>]+>/g, ' ')).replace(/\s+/g, ' ')
         dbg('DAM response title:', out.match(/<title>([^<]*)/)?.[1], 'text:', txt.slice(2500, 4500))
