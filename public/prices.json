@@ -1,7 +1,12 @@
 {
  "updated": "2026-11-20",
  "note": "Seed data from Dhaka market reports (news), Oct to Nov 2026. Replaced automatically by scripts/update-prices.mjs.",
- "sources": {},
+ "sources": {
+  "TCB": {
+   "url": "https://objectstorage.ap-dcc-gazipur-1.oraclecloud15.com/n/axvjbnqprylg/b/V2Ministry/o/office-tcb/2026/10/a6dd9fc1-c1a1-4719-be7f-fa66cffd4296.xlsx",
+   "date": "2026-11-19"
+  }
+ },
  "items": {
   "potato": {
    "min": 28,
@@ -46,11 +51,11 @@
    "source": "news"
   },
   "brinjal": {
-   "min": 60,
+   "min": 50,
    "max": 100,
    "unit": "kg",
-   "date": "2026-11-14",
-   "source": "news"
+   "date": "2026-11-19",
+   "source": "TCB"
   },
   "chili": {
    "min": 100,
@@ -165,11 +170,11 @@
    "source": "estimate"
   },
   "shosha": {
-   "min": 70,
+   "min": 50,
    "max": 80,
    "unit": "kg",
-   "date": "2026-11-14",
-   "source": "news"
+   "date": "2026-11-19",
+   "source": "TCB"
   },
   "kochu": {
    "min": 40,
@@ -298,25 +303,25 @@
    "source": "estimate"
   },
   "ada": {
-   "min": 150,
-   "max": 200,
+   "min": 100,
+   "max": 150,
    "unit": "kg",
-   "date": null,
-   "source": "estimate"
+   "date": "2026-11-19",
+   "source": "TCB"
   },
   "rosun": {
-   "min": 150,
-   "max": 200,
+   "min": 100,
+   "max": 140,
    "unit": "kg",
-   "date": null,
-   "source": "estimate"
+   "date": "2026-11-19",
+   "source": "TCB"
   },
   "lebu": {
    "min": 20,
-   "max": 40,
+   "max": 30,
    "unit": "hali",
-   "date": null,
-   "source": "estimate"
+   "date": "2026-11-19",
+   "source": "TCB"
   },
   "peyara": {
    "min": 70,
@@ -431,11 +436,11 @@
    "source": "estimate"
   },
   "khejur": {
-   "min": 600,
-   "max": 900,
+   "min": 350,
+   "max": 550,
    "unit": "kg",
-   "date": null,
-   "source": "estimate"
+   "date": "2026-11-19",
+   "source": "TCB"
   }
  }
 }
