@@ -4,6 +4,10 @@ import { IMG, ITEMS, applyLive, type Live } from '@/lib/data'
 import { cn } from '@/lib/utils'
 import { BN, POSTER, extrude, halftone, star, KashemChat, ListPage, type ChatSkin, type ListSkin, type Page } from './common'
 import { FX_MS, PageFx } from './transitions'
+import seed from '../../public/prices.json'
+
+// Prices as of this build, so the page shows real prices even before (or without) the fetch below.
+applyLive(seed as unknown as Live)
 import { ModeSwitch, Sky, THEME_CSS, useMode } from './theme'
 import { AppCard, BudgetMode, ListControl, ListFab, OfflineNote, SeasonCalendar, ShareList, ShostaBoard, ThokseNaki, Trend } from './features'
 
@@ -65,7 +69,7 @@ function Caution({ className, updated }: { className?: string; updated: string |
 export default function Site() {
   const { mode, toggle } = useMode()
   const [ver, setVer] = useState(0)
-  const [updated, setUpdated] = useState<string | null>(null)
+  const [updated, setUpdated] = useState<string | null>(seed.updated)
   useEffect(() => {
     fetch('/prices.json', { cache: 'no-store' }).then((r) => (r.ok ? r.json() : Promise.reject())).then((j: Live) => { applyLive(j); setUpdated(j.updated); setVer((v) => v + 1) }).catch(() => {})
   }, [])
