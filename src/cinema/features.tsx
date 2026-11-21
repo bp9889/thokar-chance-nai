@@ -31,7 +31,7 @@ export function ShostaBoard({ onPick }: { onPick: (id: string) => void }) {
   return (
     <section id="shosta" className="mx-auto max-w-[1180px] scroll-mt-6 px-4 pb-24 md:px-6" aria-labelledby="shosta-h">
       <div className="rv rv-brush"><h2 id="shosta-h" style={extrude('clamp(2.6rem,6.5vw,4.6rem)', '#FFD21F', '#1F7A3A')}>Ajke <span style={{ fontFamily: POSTER, fontSize: '.62em' }}>SHOSTA</span> ki?</h2></div>
-      <p className="mt-2 max-w-[60ch] text-lg text-[var(--soft)]">TCB-er report onujayi gelo mash er cheye jegulor dam kome geche. Baki ghor gula season er jinish, ekhon emnitei shosta thake.</p>
+      <p className="mt-2 max-w-[60ch] text-lg text-[var(--soft)]">TCB er report onujayi gelo mash er cheye jegulor dam kome geche. Baki ghor gula season er jinish, ekhon emnitei shosta thake.</p>
       <ol className="no-scrollbar mt-7 -mx-4 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-3 md:mx-0 md:grid md:grid-cols-5 md:overflow-visible md:px-0">
         {cards.map(({ i, tag, note, season }, k) => (
           <li key={i.id} className="w-[64%] shrink-0 snap-start sm:w-[40%] md:w-auto">
@@ -280,7 +280,7 @@ export function SeasonCalendar({ onPick }: { onPick: (id: string) => void }) {
   const s = SEASONS.find((x) => x.id === sel)!
   return (
     <section id="season" className="mx-auto max-w-[1180px] scroll-mt-6 px-4 pb-28 md:px-6" aria-labelledby="sc-h">
-      <div className="rv rv-brush"><h2 id="sc-h" style={extrude('clamp(2.6rem,6.5vw,4.6rem)', '#FFD21F', '#C4161C')}>Season-er <span style={{ fontFamily: POSTER, fontSize: '.6em' }}>CALENDAR</span></h2></div>
+      <div className="rv rv-brush"><h2 id="sc-h" style={extrude('clamp(2.6rem,6.5vw,4.6rem)', '#FFD21F', '#C4161C')}>Season er <span style={{ fontFamily: POSTER, fontSize: '.6em' }}>CALENDAR</span></h2></div>
       <p className="mt-2 max-w-[60ch] text-lg text-[var(--soft)]">Choy ritu, choy rokom bazar. Season er jinish taja thake, dam o kom thake.</p>
       <div role="group" aria-label="Season" className="no-scrollbar mt-5 -mx-4 flex gap-2 overflow-x-auto px-4 pt-3 pb-2 md:mx-0 md:px-0">
         {SEASONS.map((x) => (
@@ -403,5 +403,30 @@ export function ListFab({ b, open }: { b: Bazar; open: () => void }) {
       </span>
       <span className="text-left leading-tight"><span className="block font-bold">Amar list</span><span className="block text-sm tabular-nums">{count ? b.list.total : 'Khali'}</span></span>
     </button>
+  )
+}
+
+/** On phones, right at the top: get the Android app (or, on iPhone, add to home screen). Can be closed for 14 days. */
+export function AppBanner() {
+  const { inApp, android } = useInstall()
+  const [show, setShow] = useState(false)
+  const ios = typeof navigator !== 'undefined' && /iPhone|iPad|iPod/i.test(navigator.userAgent)
+  useEffect(() => {
+    if (inApp || !matchMedia('(max-width: 767px)').matches) return
+    try { const until = Number(localStorage.getItem('tcn-app-no') || 0); if (until > Date.now()) return } catch { /* private mode */ }
+    setShow(true)
+  }, [inApp])
+  if (!show) return null
+  const close = () => { setShow(false); try { localStorage.setItem('tcn-app-no', String(Date.now() + 14 * 864e5)) } catch { /* private mode */ } }
+  return (
+    <div role="region" aria-label="Android app" className="relative z-20 flex items-center gap-3 bg-[#FFD21F] px-4 py-3 text-[#1A0B07]" style={{ animation: 'kc-row 360ms var(--ease-out) both' }}>
+      <img src="/icons/icon-192.png" alt="" className="size-11 shrink-0 rounded-[10px]" />
+      <div className="min-w-0 flex-1 leading-tight">
+        <p className="font-bold">{ios ? 'Home screen e rakhun' : 'Amader Android app ache!'}</p>
+        <p className="text-sm">{ios ? 'Share › Add to Home Screen tap korun.' : 'Net na thakleo shesh dam dekhben.'}</p>
+      </div>
+      {!ios && <a href={APK} download className="kc-press grid h-11 shrink-0 place-items-center rounded-[4px] bg-[#1A0B07] px-4 font-bold text-[#FFD21F]">{android ? 'Namaan' : 'APK'}</a>}
+      <button type="button" onClick={close} aria-label="Close" className="kc-press grid size-11 shrink-0 cursor-pointer place-items-center rounded-full text-2xl leading-none">×</button>
+    </div>
   )
 }

@@ -26,7 +26,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
  */
 public class MainActivity extends Activity {
     static final String HOST = "thokar-chance-nai.vercel.app";
-    static final int APP_VERSION = 1;
+    static final int APP_VERSION = 2;
     static final String HOME = "https://" + HOST + "/?source=app&av=" + APP_VERSION;
 
     WebView web;

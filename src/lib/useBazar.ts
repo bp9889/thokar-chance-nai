@@ -11,8 +11,14 @@ export function useBazar(ver = 0) {
   const [done, setDone] = useState(false)
   const [copied, setCopied] = useState(false)
   const [list, setList] = useState<Record<string, number>>(() => {
-    try { const saved = JSON.parse(localStorage.getItem('tcn-list') || 'null'); if (saved && typeof saved === 'object') return Object.fromEntries(Object.entries(saved).filter(([id, n]) => BY[id] && typeof n === 'number' && n > 0)) as Record<string, number> } catch { /* private mode */ }
-    return { potato: 0.5, onion: 0.5, cauliflower: 1, chili: 0.25, lalshak: 2 }
+    // New visitors start with an empty list. A list that is exactly the old sample list was never theirs, so drop it.
+    const SAMPLE = '{"potato":0.5,"onion":0.5,"cauliflower":1,"chili":0.25,"lalshak":2}'
+    try {
+      const raw = localStorage.getItem('tcn-list')
+      const saved = raw && raw !== SAMPLE ? JSON.parse(raw) : null
+      if (saved && typeof saved === 'object') return Object.fromEntries(Object.entries(saved).filter(([id, n]) => BY[id] && typeof n === 'number' && n > 0)) as Record<string, number>
+    } catch { /* private mode */ }
+    return {}
   })
   useEffect(() => { try { localStorage.setItem('tcn-list', JSON.stringify(list)) } catch { /* private mode */ } }, [list])
 

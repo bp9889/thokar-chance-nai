@@ -1,7 +1,7 @@
 {
   "name": "THOKAR চান্স NAI",
   "short_name": "Thokar Chance Nai",
-  "description": "Ajker Dhaka bazar-er ashol dam: sobji, shak, fol ar moshla.",
+  "description": "Ajker Dhaka bazar er ashol dam: sobji, shak, fol ar moshla.",
   "start_url": "/?source=pwa",
   "scope": "/",
   "display": "standalone",

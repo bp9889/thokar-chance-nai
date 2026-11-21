@@ -8,10 +8,12 @@ export const POSTER = "'Bungee', sans-serif"
 export const NEON = "'Tilt Neon Variable', sans-serif"
 export const halftone: React.CSSProperties = { backgroundImage: 'radial-gradient(rgba(26,11,7,.16) 1.2px, transparent 1.6px)', backgroundSize: '7px 7px' }
 export const star = 'polygon(50% 0%,61% 14%,79% 9%,79% 28%,96% 35%,85% 50%,96% 65%,79% 72%,79% 91%,61% 86%,50% 100%,39% 86%,21% 91%,21% 72%,4% 65%,15% 50%,4% 35%,21% 28%,21% 9%,39% 14%)'
+/** A solid outline made of text-shadows. -webkit-text-stroke draws the inner overlap lines of these fonts, so it is not used. */
+export const outline = (w: string, color = '#1A0B07', steps = 16) =>
+  Array.from({ length: steps }, (_, k) => { const a = (k / steps) * Math.PI * 2; return `calc(${w} * ${Math.cos(a).toFixed(3)}) calc(${w} * ${Math.sin(a).toFixed(3)}) 0 ${color}` }).join(',')
 export const extrude = (size: string, fill = '#FFD21F', shadow = '#C4161C'): React.CSSProperties => ({
   fontFamily: BN, fontWeight: 800, fontVariationSettings: '"wdth" 75', fontSize: size, lineHeight: 0.9, color: fill,
-  WebkitTextStroke: '0.035em #1A0B07', paintOrder: 'stroke fill',
-  textShadow: Array.from({ length: 7 }, (_, k) => `${k + 1}px ${k + 1}px 0 ${shadow}`).join(',') + ', 9px 10px 0 #1A0B07',
+  textShadow: outline('0.035em') + ',' + Array.from({ length: 7 }, (_, k) => `calc(0.035em + ${k + 1}px) calc(0.035em + ${k + 1}px) 0 ${shadow}`).join(',') + ', calc(0.035em + 9px) calc(0.035em + 10px) 0 #1A0B07',
 })
 
 export type Variant = 'projector' | 'poster' | 'neon'
@@ -135,6 +137,18 @@ export function KashemChat({ b, skin, id }: { b: Bazar; skin: ChatSkin; id: stri
 
 export type ListSkin = { page: string; card: string; guideCard: string; title: (s: string) => React.ReactNode; muted: string; accent: string; btn: string; rowLine: string; enter: string }
 
+/** Empties the list. Asks once more in place (no pop-up), and goes back to normal after 3 seconds. */
+function ClearList({ clear }: { clear: () => void }) {
+  const [sure, setSure] = useState(false)
+  useEffect(() => { if (!sure) return; const t = setTimeout(() => setSure(false), 3000); return () => clearTimeout(t) }, [sure])
+  return (
+    <button type="button" onClick={() => { if (sure) { clear(); setSure(false) } else setSure(true) }}
+      className={cn('kc-press h-11 shrink-0 cursor-pointer rounded-full px-4 font-bold transition-colors duration-200', sure ? 'bg-[#C4161C] text-[#FFD21F]' : 'bg-current/10')}>
+      {sure ? 'Sure? Abar tap korun' : 'List khali korun'}
+    </button>
+  )
+}
+
 /** Page 2: Birot (half-a-kilo guide) + Amar bazar list. */
 export function ListPage({ b, skin, goHome, share, extra }: { b: Bazar; skin: ListSkin; goHome: () => void; share?: React.ReactNode; extra?: React.ReactNode }) {
   const lo = useCountUp(b.list.lo), hi = useCountUp(b.list.hi)
@@ -144,7 +158,10 @@ export function ListPage({ b, skin, goHome, share, extra }: { b: Bazar; skin: Li
       <button type="button" onClick={goHome} className={cn('kc-press h-11 cursor-pointer rounded-full px-5 text-lg', skin.btn)}>← Back to the show</button>
       <div className="mt-8 grid gap-6 md:grid-cols-[1.15fr_1fr]">
         <section className={cn('rounded-[10px] p-6 md:p-8', skin.card, skin.enter)}>
-          {skin.title('Amar bazar লিস্ট')}
+          <div className="flex flex-wrap items-start justify-between gap-3">
+            {skin.title('Amar bazar লিস্ট')}
+            {!b.list.empty && <ClearList clear={() => b.setAll({})} />}
+          </div>
           <p className={cn('mt-2', skin.muted)}>Printed like a ticket stub. We add up the usual prices so you know the cash to carry.</p>
           <ul className="mt-4">
             {b.list.rows.map((r, k) => (
@@ -157,7 +174,7 @@ export function ListPage({ b, skin, goHome, share, extra }: { b: Bazar; skin: Li
                 <button type="button" onClick={() => b.drop(r.id)} aria-label={`Remove ${r.name}`} className="kc-press size-11 cursor-pointer rounded-full text-xl opacity-60">×</button>
               </li>
             ))}
-            {b.list.empty && <li className="py-6 text-xl">List khali. Go back and add from Now চলছে.</li>}
+            {b.list.empty && <li className="py-6 text-xl">List khali. Now চলছে theke "+ List e rakhun" tap korun.</li>}
           </ul>
           <div className="mt-5 flex flex-wrap items-end justify-between gap-4 border-t-4 border-double border-current/40 pt-4">
             <div><p className={skin.muted}>Expected total</p><p className="text-4xl font-extrabold tabular-nums" style={{ fontFamily: BN, fontVariationSettings: '"wdth" 75' }}>Tk {lo === hi ? lo : `${lo}–${hi}`}</p></div>

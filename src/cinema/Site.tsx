@@ -2,14 +2,14 @@ import { useEffect, useState } from 'react'
 import { useBazar } from '@/lib/useBazar'
 import { IMG, ITEMS, applyLive, type Live } from '@/lib/data'
 import { cn } from '@/lib/utils'
-import { BN, POSTER, extrude, halftone, star, KashemChat, ListPage, type ChatSkin, type ListSkin, type Page } from './common'
+import { BN, POSTER, extrude, outline, halftone, star, KashemChat, ListPage, type ChatSkin, type ListSkin, type Page } from './common'
 import { FX_MS, PageFx } from './transitions'
 import seed from '../../public/prices.json'
 
 // Prices as of this build, so the page shows real prices even before (or without) the fetch below.
 applyLive(seed as unknown as Live)
 import { ModeSwitch, Sky, THEME_CSS, useMode } from './theme'
-import { AppCard, BudgetMode, ListControl, ListFab, OfflineNote, SeasonCalendar, ShareList, ShostaBoard, ThokseNaki, Trend } from './features'
+import { AppBanner, AppCard, BudgetMode, ListControl, ListFab, OfflineNote, SeasonCalendar, ShareList, ShostaBoard, ThokseNaki, Trend } from './features'
 
 const chat: ChatSkin = {
   wrap: 'bg-[#F4E3C1] text-[#1A0B07] shadow-[8px_8px_0_var(--deep)]', seller: 'bg-white text-[#1A0B07] ring-2 ring-[#1A0B07]', me: 'bg-[#C4161C] text-[#FFF1D6] ring-2 ring-[#1A0B07]',
@@ -86,6 +86,7 @@ export default function Site() {
       <style>{THEME_CSS}</style>
       <Sky />
       <OfflineNote updated={updated} />
+      <AppBanner />
       <style>{`
         @keyframes pw-slap{0%{opacity:0;scale:1.12;rotate:3deg}60%{opacity:1;scale:.985;rotate:-.6deg}100%{opacity:1;scale:1;rotate:0deg}}
         @keyframes pw-shine{0%{translate:-120% 0;opacity:1}85%{opacity:1}100%{translate:420% 0;opacity:0}}
@@ -140,13 +141,13 @@ export default function Site() {
               <div aria-hidden className="absolute inset-0" style={halftone} />
               <div aria-hidden className="pointer-events-none absolute inset-0 z-30" style={{ boxShadow: 'inset 0 0 0 10px #C4161C, inset 0 0 0 14px #1A0B07, inset 0 0 0 20px #FFD21F, inset 0 0 0 23px #1A0B07' }} />
               <div className="relative grid gap-6 px-8 pt-9 pb-10 md:grid-cols-[1.15fr_1fr] md:px-14 md:pt-12 md:pb-14">
-                <div className="flex flex-col">
-                  <p style={{ fontFamily: POSTER }} className="text-sm text-[#C4161C] md:text-base">Dhaka-r sobji cinema presents</p>
-                  <h1 className="mt-3" style={extrude('clamp(4rem,12.5vw,9.4rem)')} aria-label="Thokar chance nai">
-                    <span className="pw-brush block" style={{ fontFamily: POSTER, fontSize: '0.62em', WebkitTextStroke: '0.03em #1A0B07', animationDelay: '350ms' }}>THOKAR</span>
-                    <span className="pw-brush block" style={{ animationDelay: '600ms' }}>চান্স <span style={{ fontFamily: POSTER, fontSize: '0.62em', WebkitTextStroke: '0.03em #1A0B07' }}>NAI</span></span>
+                <div className="@container flex flex-col">
+                  <p style={{ fontFamily: POSTER }} className="text-sm text-[#C4161C] md:text-base">Dhakar sobji cinema presents</p>
+                  <h1 className="mt-3 whitespace-nowrap" style={extrude('clamp(2.6rem,21cqi,9.4rem)')} aria-label="Thokar chance nai">
+                    <span className="pw-brush block" style={{ fontFamily: POSTER, fontSize: '0.62em', animationDelay: '350ms' }}>THOKAR</span>
+                    <span className="pw-brush block" style={{ animationDelay: '600ms' }}>চান্স <span style={{ fontFamily: POSTER, fontSize: '0.62em' }}>NAI</span></span>
                   </h1>
-                  <p className="mt-5 text-[clamp(1.4rem,3.2vw,2.3rem)] leading-tight font-bold" style={{ fontVariationSettings: '"wdth" 80' }}>Ajker bazar-er ashol দাম.</p>
+                  <p className="mt-5 text-[clamp(1.4rem,3.2vw,2.3rem)] leading-tight font-bold" style={{ fontVariationSettings: '"wdth" 80' }}>Ajker bazar er ashol দাম.</p>
                   <p className="mt-1 max-w-[36ch] text-lg">Ek kilo alu, hajar ta question. {vegCount} rokom sobji, shak, moshla ar {fruitCount} rokom fol, dam shoho.</p>
                   <div className="mt-6 flex flex-wrap gap-3">
                     <a href="#dor-dam" className="kc-press pw-wig rounded-[4px] bg-[#C4161C] px-6 py-3 text-xl font-bold text-[#FFD21F] shadow-[4px_4px_0_#1A0B07]">Bargain with Kashem bhai</a>
@@ -175,8 +176,8 @@ export default function Site() {
 
           {/* DOR-DAM */}
           <section id="dor-dam" className="mx-auto max-w-[980px] scroll-mt-6 px-4 pb-24 md:px-6">
-            <div className="rv rv-brush"><h2 style={extrude('clamp(2.8rem,7vw,5rem)', '#F4E3C1', '#C4161C')}>Dor-দাম <span style={{ fontFamily: POSTER, fontSize: '.5em', WebkitTextStroke: '0.03em #1A0B07' }}>with Kashem bhai</span></h2></div>
-            <p className="mt-3 mb-8 max-w-[54ch] text-lg text-[var(--soft)]">A comic-strip bargain. He names the item, you say your price, he tells you if you got it right. Kashem bhai is a made-up character, kintu tar dor-dam ekdom real.</p>
+            <div className="rv rv-brush"><h2 style={extrude('clamp(2.8rem,7vw,5rem)', '#F4E3C1', '#C4161C')}>Dor-দাম <span style={{ fontFamily: POSTER, fontSize: '.5em' }}>with Kashem bhai</span></h2></div>
+            <p className="mt-3 mb-8 max-w-[54ch] text-lg text-[var(--soft)]">A comic strip bargain. He names the item, you say your price, he tells you if you got it right. Kashem bhai is a made up character, kintu tar dor-dam ekdom real.</p>
             <div className="rv rv-slap"><KashemChat b={b} skin={chat} id="tcn-guess" /></div>
           </section>
 
@@ -231,7 +232,7 @@ export default function Site() {
                       <p className="relative mt-1 text-xl">{cur.name} · {cur.bn}</p>
                       <div className="relative mt-5 flex flex-wrap items-end justify-between gap-4">
                         <div>
-                          <p className="np-price text-[3rem] leading-none font-extrabold" style={{ fontVariationSettings: '"wdth" 75', WebkitTextStroke: '1.5px #1A0B07' }}>{cur.available ? cur.price : 'Ekhon season na'}</p>
+                          <p className="np-price text-[3rem] leading-none font-extrabold" style={{ fontVariationSettings: '"wdth" 75', textShadow: outline('2px') }}>{cur.available ? cur.price : 'Ekhon season na'}</p>
                           <p>{cur.per}{cur.available && <> · <span className={cn(cur.fresh.stale && 'rounded-[3px] bg-[#FFD21F] px-1.5 font-bold text-[#1A0B07]')}>{cur.fresh.label}</span></>}</p>
                           <p className="mt-1 flex flex-wrap gap-1.5"><Trend i={cur} /><Trend i={cur} vs="month" /></p>
                         </div>
