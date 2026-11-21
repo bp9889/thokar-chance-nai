@@ -331,12 +331,12 @@ export function AppCard() {
   return (
     <div className="rv rv-slap mt-10 flex flex-col gap-4 rounded-[10px] bg-[#FFD21F] p-6 text-[#1A0B07] shadow-[6px_6px_0_var(--deep)] md:flex-row md:items-center md:justify-between">
       <div>
-        <p className="text-2xl leading-none" style={{ fontFamily: POSTER }}>Phone e rakhun</p>
-        <p className="mt-1 max-w-[52ch]">Bazar e net na thakle o shesh dekha dam gula dekhte parben. Android app namaan, othoba home screen e add korun.</p>
+        <p className="text-2xl leading-none" style={{ fontFamily: POSTER }}>Get the app</p>
+        <p className="mt-1 max-w-[52ch]">See the last saved prices even when the internet drops in the bazar. Install the Android app, or add the site to your home screen.</p>
       </div>
       <div className="flex flex-wrap gap-2">
-        <a href={APK} download className="kc-press inline-grid h-12 place-items-center rounded-[4px] bg-[#1A0B07] px-5 text-lg font-bold text-[#FFD21F]">{android ? 'Android app namaan' : 'Android app (APK)'}</a>
-        {bip && <button type="button" onClick={() => bip.prompt()} className="kc-press h-12 cursor-pointer rounded-[4px] bg-white px-5 text-lg font-bold ring-2 ring-[#1A0B07]">Home screen e add</button>}
+        <a href={APK} download className="kc-press inline-grid h-12 place-items-center rounded-[4px] bg-[#1A0B07] px-5 text-lg font-bold text-[#FFD21F]">{android ? 'Download the Android app' : 'Android app (APK)'}</a>
+        {bip && <button type="button" onClick={() => bip.prompt()} className="kc-press h-12 cursor-pointer rounded-[4px] bg-white px-5 text-lg font-bold ring-2 ring-[#1A0B07]">Add to home screen</button>}
       </div>
     </div>
   )
@@ -422,10 +422,10 @@ export function AppBanner() {
     <div role="region" aria-label="Android app" className="relative z-20 flex items-center gap-3 bg-[#FFD21F] px-4 py-3 text-[#1A0B07]" style={{ animation: 'kc-row 360ms var(--ease-out) both' }}>
       <img src="/icons/icon-192.png" alt="" className="size-11 shrink-0 rounded-[10px]" />
       <div className="min-w-0 flex-1 leading-tight">
-        <p className="font-bold">{ios ? 'Home screen e rakhun' : 'Amader Android app ache!'}</p>
-        <p className="text-sm">{ios ? 'Share › Add to Home Screen tap korun.' : 'Net na thakleo shesh dam dekhben.'}</p>
+        <p className="font-bold">{ios ? 'Add us to your home screen' : 'Get our Android app'}</p>
+        <p className="text-sm">{ios ? 'Tap Share, then Add to Home Screen.' : 'See the latest prices, even offline.'}</p>
       </div>
-      {!ios && <a href={APK} download className="kc-press grid h-11 shrink-0 place-items-center rounded-[4px] bg-[#1A0B07] px-4 font-bold text-[#FFD21F]">{android ? 'Namaan' : 'APK'}</a>}
+      {!ios && <a href={APK} download className="kc-press grid h-11 shrink-0 place-items-center rounded-[4px] bg-[#1A0B07] px-4 font-bold text-[#FFD21F]">{android ? 'Install' : 'APK'}</a>}
       <button type="button" onClick={close} aria-label="Close" className="kc-press grid size-11 shrink-0 cursor-pointer place-items-center rounded-full text-2xl leading-none">×</button>
     </div>
   )
