@@ -1,10 +1,10 @@
 {
- "updated": "2026-11-20",
+ "updated": "2026-11-21",
  "note": "Seed data from Dhaka market reports (news), Oct to Nov 2026. Replaced automatically by scripts/update-prices.mjs.",
  "sources": {
   "TCB": {
-   "url": "https://objectstorage.ap-dcc-gazipur-1.oraclecloud15.com/n/axvjbnqprylg/b/V2Ministry/o/office-tcb/2026/10/a6dd9fc1-c1a1-4719-be7f-fa66cffd4296.xlsx",
-   "date": "2026-11-19"
+   "url": "https://objectstorage.ap-dcc-gazipur-1.oraclecloud15.com/n/axvjbnqprylg/b/V2Ministry/o/office-tcb/2026/10/a09b6be3-f380-4e22-80cb-2480a942d588.xlsx",
+   "date": "2026-11-20"
   }
  },
  "items": {
@@ -12,7 +12,7 @@
    "min": 25,
    "max": 30,
    "unit": "kg",
-   "date": "2026-11-19",
+   "date": "2026-11-20",
    "source": "TCB",
    "week": [
     25,
@@ -38,7 +38,7 @@
    "min": 45,
    "max": 55,
    "unit": "kg",
-   "date": "2026-11-19",
+   "date": "2026-11-20",
    "source": "TCB",
    "week": [
     40,
@@ -78,7 +78,7 @@
    "min": 50,
    "max": 100,
    "unit": "kg",
-   "date": "2026-11-19",
+   "date": "2026-11-20",
    "source": "TCB",
    "week": [
     70,
@@ -97,10 +97,10 @@
    "min": 60,
    "max": 120,
    "unit": "kg",
-   "date": "2026-11-19",
+   "date": "2026-11-20",
    "source": "TCB",
    "week": [
-    80,
+    60,
     120
    ],
    "month": [
@@ -221,7 +221,7 @@
    "min": 50,
    "max": 80,
    "unit": "kg",
-   "date": "2026-11-19",
+   "date": "2026-11-20",
    "source": "TCB",
    "week": [
     50,
@@ -366,7 +366,7 @@
    "min": 100,
    "max": 150,
    "unit": "kg",
-   "date": "2026-11-19",
+   "date": "2026-11-20",
    "source": "TCB",
    "week": [
     120,
@@ -385,7 +385,7 @@
    "min": 100,
    "max": 140,
    "unit": "kg",
-   "date": "2026-11-19",
+   "date": "2026-11-20",
    "source": "TCB",
    "week": [
     100,
@@ -396,15 +396,15 @@
     140
    ],
    "year": [
-    90,
-    150
+    80,
+    140
    ]
   },
   "lebu": {
    "min": 20,
    "max": 30,
    "unit": "hali",
-   "date": "2026-11-19",
+   "date": "2026-11-20",
    "source": "TCB",
    "week": [
     20,
@@ -531,7 +531,7 @@
    "min": 350,
    "max": 550,
    "unit": "kg",
-   "date": "2026-11-19",
+   "date": "2026-11-20",
    "source": "TCB",
    "week": [
     350,
