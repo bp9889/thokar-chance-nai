@@ -1,4 +1,4 @@
-/* The 10/10 features: Thokse naki? checker, price arrows, Ajke shosta ki?, budget mode,
+/* The 10/10 features: Thokse naki? checker, price arrows, Ajke shosta ki?,
    WhatsApp list share, install/offline, and the season calendar. */
 import { useEffect, useMemo, useState } from 'react'
 import type { Bazar } from '@/lib/useBazar'
