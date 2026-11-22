@@ -88,9 +88,13 @@ export default function Site() {
   const b = useBazar(ver)
   const { page, phase, go } = usePage()
   const [sel, setSel] = useState<string>('potato')
+  // Phones show the first SHORT rows until "Shob dekhun"; a search always shows every match.
+  const SHORT = 15
+  const [allRows, setAllRows] = useState(false)
   useReveal(`${page}-${b.cat}-${b.q}-${ver}`)
   const cur = b.board.find((i) => i.id === sel) ?? b.board[0]
-  const pick = (id: string) => { b.setQ(''); b.setCat('all'); setSel(id); document.getElementById('now-cholche')?.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' }) }
+  const short = !allRows && !b.q && b.board.length > SHORT
+  const pick = (id: string) => { b.setQ(''); b.setCat('all'); setSel(id); setAllRows(true); document.getElementById('now-cholche')?.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' }) }
   const fruitCount = ITEMS.filter((i) => i.cat === 'fruit').length, vegCount = ITEMS.length - fruitCount
 
   return (
@@ -133,7 +137,7 @@ export default function Site() {
       <PageFx fx="shutter" phase={phase} />
 
       <header className="relative z-10 mx-auto flex max-w-[1180px] flex-wrap items-center justify-between gap-3 px-4 pt-5 md:px-6">
-        <button type="button" onClick={() => go('home')} className="cursor-pointer text-xl md:text-2xl" style={{ fontFamily: POSTER, color: 'var(--brand)' }}>THOKAR <span style={{ fontFamily: BN }}>চান্স</span> NAI</button>
+        <button type="button" onClick={() => go('home')} className="min-h-11 cursor-pointer text-xl md:text-2xl" style={{ fontFamily: POSTER, color: 'var(--brand)' }}>THOKAR <span style={{ fontFamily: BN }}>চান্স</span> NAI</button>
         <nav aria-label="Main" className="flex flex-wrap items-center gap-2 text-lg">
           {page === 'home' && <><a href="#dor-dam" className="rounded-full px-4 py-2 hover:bg-[var(--hover)]">Dor-দাম</a><a href="#thokse-naki" className="hidden rounded-full px-4 py-2 hover:bg-[var(--hover)] sm:inline">Thokse naki?</a><a href="#now-cholche" className="rounded-full px-4 py-2 hover:bg-[var(--hover)]">Now চলছে</a></>}
           <ModeSwitch mode={mode} toggle={toggle} />
@@ -188,7 +192,7 @@ export default function Site() {
 
           {/* DOR-DAM */}
           <section id="dor-dam" className="mx-auto max-w-[980px] scroll-mt-6 px-4 pb-24 md:px-6">
-            <div className="rv rv-brush"><h2 style={extrude('clamp(2.8rem,7vw,5rem)', '#F4E3C1', '#C4161C')}>Dor-দাম <span style={{ fontFamily: POSTER, fontSize: '.5em' }}>with Kashem bhai</span></h2></div>
+            <div className="rv rv-brush"><h2 style={extrude('clamp(2.8rem,7vw,5rem)', '#F4E3C1', '#C4161C')}>Dor-দাম <span className="block whitespace-nowrap sm:inline" style={{ fontFamily: POSTER, fontSize: '.5em' }}>with Kashem bhai</span></h2></div>
             <p className="mt-3 mb-8 max-w-[54ch] text-lg text-[var(--soft)]">A comic strip bargain. He names the item, you say your price, he tells you if you got it right. Kashem bhai is a made up character, kintu tar dor-dam ekdom real.</p>
             <div className="rv rv-slap"><KashemChat b={b} skin={chat} id="tcn-guess" /></div>
           </section>
@@ -203,7 +207,7 @@ export default function Site() {
             <div className="mt-8 flex flex-wrap items-center gap-3">
               <label className="flex h-12 min-w-0 flex-1 basis-60 items-center rounded-[4px] bg-[#FFF8EA] px-4 text-[#1A0B07] shadow-[3px_3px_0_var(--deep)] ring-1 ring-[#1A0B07]/20">
                 <span className="sr-only">Search fruits and vegetables</span>
-                <input type="search" value={b.q} onChange={(e) => b.setQ(e.target.value)} placeholder="Khujun: alu, malta, palong…" className="w-full bg-transparent text-lg outline-none placeholder:text-[#6B5A48]" />
+                <input type="search" value={b.q} onChange={(e) => b.setQ(e.target.value)} placeholder="Khujun: alu, malta, palong…" className="h-full w-full bg-transparent text-lg outline-none placeholder:text-[#6B5A48]" />
               </label>
               <div role="group" aria-label="Filter" className="flex flex-wrap gap-2">
                 {b.cats.map((c) => <button key={c.id} type="button" aria-pressed={b.cat === c.id} onClick={() => b.setCat(c.id)} className={cn('kc-press h-11 cursor-pointer rounded-[4px] px-4 text-lg font-bold transition-colors duration-200', b.cat === c.id ? 'bg-[#FFD21F] text-[#1A0B07]' : 'bg-[var(--chip)] text-[var(--chip-ink)]')}>{c.label}</button>)}
@@ -212,9 +216,9 @@ export default function Site() {
             {b.board.length === 0 && <p className="mt-8 text-xl">"{b.q}" naam e kono show nai. Try alu ba malta.</p>}
             {cur && (
               <div className="mt-10 grid gap-8 md:grid-cols-[1fr_1.05fr]">
-                <ul key={`${b.cat}-${b.q}`} className="rv rv-rows" aria-label="Today's items">
+                <ul id="now-rows" key={`${b.cat}-${b.q}`} className="rv rv-rows" aria-label="Today's items">
                   {b.board.map((i, k) => (
-                    <li key={i.id} className="border-b border-[var(--line)]" style={{ animationDelay: `${Math.min(k, 14) * 35}ms` }}>
+                    <li key={i.id} className={cn('border-b border-[var(--line)]', short && k >= SHORT && i.id !== cur.id && 'max-md:hidden')} style={{ animationDelay: `${Math.min(k, 14) * 35}ms` }}>
                       <button type="button" aria-current={cur.id === i.id} onMouseEnter={() => setSel(i.id)} onFocus={() => setSel(i.id)} onClick={() => setSel(i.id)}
                         className={cn('pw-idx flex w-full cursor-pointer items-center justify-between gap-4 py-3 text-left', !i.available && 'opacity-55')}>
                         <span className="flex items-center gap-3"><img src={i.img} alt="" className="size-8" /><span className="text-[clamp(1.25rem,2.6vw,1.7rem)] leading-none" style={{ fontFamily: POSTER }}>{i.local}</span></span>
@@ -234,6 +238,13 @@ export default function Site() {
                     </li>
                   ))}
                 </ul>
+                {(short || (allRows && !b.q && b.board.length > SHORT)) && (
+                  <button type="button" aria-expanded={!short} aria-controls="now-rows"
+                    onClick={() => { if (short) setAllRows(true); else { setAllRows(false); document.getElementById('now-cholche')?.scrollIntoView({ behavior: 'auto' }) } }}
+                    className="kc-press -mt-4 h-12 w-full cursor-pointer rounded-[4px] bg-[#FFD21F] px-5 text-lg font-bold text-[#1A0B07] shadow-[3px_3px_0_var(--deep)] md:hidden">
+                    {short ? `Shob dekhun (aro ${b.board.length - SHORT} ta)` : 'Kom dekhun'}
+                  </button>
+                )}
                 <div className="hidden md:block">
                   <div className="md:sticky md:top-6">
                     <div key={cur.id} className="np pw-slap relative overflow-hidden rounded-[6px] p-8 shadow-[10px_10px_0_var(--deep)]" data-off={!cur.available || undefined} style={{ animationDuration: '420ms' }}>

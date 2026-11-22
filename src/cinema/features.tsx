@@ -139,7 +139,7 @@ export function ThokseNaki() {
               ))}
               <label className="flex h-11 items-center gap-2 rounded-[4px] bg-white px-3 ring-2 ring-[#1A0B07]/40">
                 <span className="text-sm opacity-70">Onno</span>
-                <input type="number" inputMode="decimal" min={it.unit === 'kg' ? 0.05 : 1} step={it.unit === 'kg' ? 'any' : 1} value={qty} onChange={(e) => { setQty(Math.max(0, Number(e.target.value))); setShown(false) }} className="w-16 bg-transparent text-lg outline-none" aria-label={`Quantity in ${it.unit === 'kg' ? 'kg' : it.unit === 'g100' ? 'hundreds of grams' : it.unit}`} />
+                <input type="number" inputMode="decimal" min={it.unit === 'kg' ? 0.05 : 1} step={it.unit === 'kg' ? 'any' : 1} value={qty} onChange={(e) => { setQty(Math.max(0, Number(e.target.value))); setShown(false) }} className="h-full w-16 bg-transparent text-lg outline-none" aria-label={`Quantity in ${it.unit === 'kg' ? 'kg' : it.unit === 'g100' ? 'hundreds of grams' : it.unit}`} />
                 <span className="text-sm">{it.unit === 'kg' ? 'kg' : it.unit === 'g100' ? '×100 g' : it.unit === 'piece' ? 'ta' : it.unit === 'bundle' ? 'aati' : 'hali'}</span>
               </label>
             </div>
@@ -148,7 +148,7 @@ export function ThokseNaki() {
             <span className="mb-1.5 block font-bold">Koto dilen?</span>
             <span className="flex h-14 items-center gap-2 rounded-[4px] bg-white px-4 ring-2 ring-[#1A0B07]">
               <span className="text-xl font-bold">Tk</span>
-              <input type="number" inputMode="numeric" min={1} required value={paid} onChange={(e) => { setPaid(e.target.value); setShown(false) }} placeholder="eg. 60" className="w-full bg-transparent text-2xl font-bold outline-none placeholder:font-normal placeholder:opacity-40" />
+              <input type="number" inputMode="numeric" min={1} required value={paid} onChange={(e) => { setPaid(e.target.value); setShown(false) }} placeholder="eg. 60" className="h-full w-full bg-transparent text-2xl font-bold outline-none placeholder:font-normal placeholder:opacity-40" />
             </span>
           </label>
           <button type="submit" className="kc-press pw-wig h-13 w-full cursor-pointer rounded-[4px] bg-[#C4161C] px-5 py-3 text-xl font-bold text-[#FFD21F] shadow-[4px_4px_0_#1A0B07]">Judge koren</button>
