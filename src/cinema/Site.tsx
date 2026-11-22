@@ -62,6 +62,25 @@ function useReveal(dep: unknown) {
   }, [dep])
 }
 
+type Src = { available: boolean; date?: string | null; source?: string; fresh: { approx: boolean; stale: boolean } }
+const fmtDate = (d: string) => new Date(d + 'T00:00:00').toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
+/** "Dam kothay theke?": a native disclosure (keyboard friendly) that says where this item's number comes from. */
+function SourceNote({ i, className }: { i: Src; className?: string }) {
+  if (!i.available) return null
+  const text = i.fresh.approx || !i.date
+    ? 'Approx. dam: TCB er daily report e ei jinish nai, tai eta Dhakar bazar er rough estimate. Kinar age dokane ektu jachai kore nin.'
+    : `${i.source === 'TCB' ? 'TCB (Trading Corporation of Bangladesh)' : i.source ?? 'Sarkari'} er Dhaka khuchra bazar report, ${fmtDate(i.date)}. Range ta oi report er sob theke kom ar sob theke beshi dam.${i.fresh.stale ? ' 7 din er beshi notun report ashe nai, tai dam ta purono hote pare.' : ''}`
+  return (
+    <details className={cn('group text-sm', className)}>
+      <summary className="inline-flex min-h-11 cursor-pointer list-none items-center gap-1.5 font-bold underline decoration-dotted underline-offset-4 [&::-webkit-details-marker]:hidden">
+        <span aria-hidden className="grid size-5 place-items-center rounded-full border-2 border-current text-xs leading-none">i</span>
+        Dam kothay theke?
+      </summary>
+      <p className="mt-1 max-w-[52ch] leading-snug opacity-90">{text}</p>
+    </details>
+  )
+}
+
 function Caution({ className, updated }: { className?: string; updated: string | null }) {
   return (
     <aside className={cn('rv rv-slap relative flex gap-4 rounded-[6px] bg-[#FFD21F] p-5 text-[#1A0B07] shadow-[6px_6px_0_var(--deep)] md:gap-6 md:p-6', className)}
@@ -203,8 +222,9 @@ export default function Site() {
           <section id="now-cholche" className="mx-auto max-w-[1180px] scroll-mt-6 px-4 pb-32 md:px-6">
             <div className="rv rv-brush"><h2 style={extrude('clamp(3rem,8vw,5.5rem)', '#FFD21F', '#C4161C')}><span style={{ fontFamily: POSTER, fontSize: '.7em' }}>NOW </span>চলছে</h2></div>
             <p className="mt-2 text-lg text-[var(--soft)]">{ITEMS.length} items: sobji, shak, moshla ar fol. Naam e hover korun ba tap korun, poster ta dekhben.</p>
-            <Caution className="mt-6" updated={updated} />
-            <div className="mt-8 flex flex-wrap items-center gap-3">
+            <div className="flex flex-col">
+            <Caution className="mt-6 max-md:order-2" updated={updated} />
+            <div className="mt-8 flex flex-wrap items-center gap-3 max-md:order-1 max-md:mt-6">
               <label className="flex h-12 min-w-0 flex-1 basis-60 items-center rounded-[4px] bg-[#FFF8EA] px-4 text-[#1A0B07] shadow-[3px_3px_0_var(--deep)] ring-1 ring-[#1A0B07]/20">
                 <span className="sr-only">Search fruits and vegetables</span>
                 <input type="search" value={b.q} onChange={(e) => b.setQ(e.target.value)} placeholder="Khujun: alu, malta, palong…" className="h-full w-full bg-transparent text-lg outline-none placeholder:text-[#6B5A48]" />
@@ -212,6 +232,7 @@ export default function Site() {
               <div role="group" aria-label="Filter" className="flex flex-wrap gap-2">
                 {b.cats.map((c) => <button key={c.id} type="button" aria-pressed={b.cat === c.id} onClick={() => b.setCat(c.id)} className={cn('kc-press h-11 cursor-pointer rounded-[4px] px-4 text-lg font-bold transition-colors duration-200', b.cat === c.id ? 'bg-[#FFD21F] text-[#1A0B07]' : 'bg-[var(--chip)] text-[var(--chip-ink)]')}>{c.label}</button>)}
               </div>
+            </div>
             </div>
             {b.board.length === 0 && <p className="mt-8 text-xl">"{b.q}" naam e kono show nai. Try alu ba malta.</p>}
             {cur && (
@@ -235,6 +256,7 @@ export default function Site() {
                           {i.available && <ListControl b={b} id={i.id} size="sm" tone="row" />}
                         </div>
                       )}
+                      {cur.id === i.id && <SourceNote i={i} className="-mt-2 pb-3 md:hidden" />}
                     </li>
                   ))}
                 </ul>
@@ -258,6 +280,7 @@ export default function Site() {
                           <p className="np-price text-[3rem] leading-none font-extrabold" style={{ fontVariationSettings: '"wdth" 75', textShadow: outline('2px') }}>{cur.available ? cur.price : 'Ekhon season na'}</p>
                           <p>{cur.per}{cur.available && <> · <span className={cn(cur.fresh.stale && 'rounded-[3px] bg-[#FFD21F] px-1.5 font-bold text-[#1A0B07]')}>{cur.fresh.label}</span></>}</p>
                           <p className="mt-1 flex flex-wrap gap-1.5"><Trend i={cur} /><Trend i={cur} vs="month" /></p>
+                          <SourceNote i={cur} className="mt-1" />
                         </div>
                         {cur.available && <ListControl b={b} id={cur.id} />}
                       </div>
