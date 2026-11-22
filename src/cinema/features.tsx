@@ -52,13 +52,13 @@ export function ShostaBoard({ onPick }: { onPick: (id: string) => void }) {
 
 /* ---------- Thokse naki? ---------- */
 type Verdict = { t: string; c: string; line: string; good: boolean }
-function judge(paid: number, lo: number, hi: number): Verdict {
+export function judge(paid: number, lo: number, hi: number): Verdict {
   if (paid < lo * 0.9) return { t: 'SHOSTA PAISEN!', c: '#1F7A3A', line: 'Usual dam er cheye kom e paisen. Mama aj apnake bhalobashe.', good: true }
   if (paid <= hi * 1.05) return { t: 'THOKAR CHANCE NAI', c: '#1F7A3A', line: 'Ekdom thik dam. Apni pakka bazari.', good: true }
   if (paid <= hi * 1.2) return { t: 'EKTU THOKSEN', c: '#B8520F', line: `Tk ${paid - hi} beshi gelo. Porer bar shundor kore bolben: "Eto na MAMA PLSS."`, good: false }
   return { t: 'THOKSEN!', c: '#C4161C', line: `Tk ${paid - hi} beshi! Mama aj apnake dhorse.`, good: false }
 }
-const QUICK: Record<Item['unit'], [number, string][]> = {
+export const QUICK: Record<Item['unit'], [number, string][]> = {
   kg: [[0.25, '250 g'], [0.5, '500 g'], [1, '1 kg'], [2, '2 kg']], piece: [[1, '1 ta'], [2, '2 ta'], [3, '3 ta']], bundle: [[1, '1 aati'], [2, '2 aati'], [3, '3 aati']],
   hali: [[1, '1 hali'], [2, '2 hali'], [3, '3 hali']], g100: [[1, '100 g'], [2, '200 g'], [5, '500 g']],
 }
@@ -181,7 +181,7 @@ export function ThokseNaki() {
 
 /* ---------- budget mode ---------- */
 // Roughly 3 to 4 days of bazar for a family of 4, cheapest staples first.
-const PLAN: [string, number][] = [
+export const PLAN: [string, number][] = [
   ['potato', 2], ['onion', 1], ['chili', 0.25], ['rosun', 0.25], ['ada', 0.25], ['lalshak', 2], ['brinjal', 1], ['tomato', 0.5], ['lebu', 1],
   ['cauliflower', 1], ['pepe', 1], ['shim', 0.5], ['palong', 2], ['mula', 1], ['kola', 2], ['lau', 1], ['gajor', 0.5], ['cabbage', 1], ['peyara', 1], ['malta', 0.5],
 ]
@@ -257,7 +257,7 @@ export function ShareList({ b }: { b: Bazar }) {
 }
 
 /* ---------- season calendar ---------- */
-const SEASONS = [
+export const SEASONS = [
   { id: 'grishmo', name: 'Grishmo', bn: 'গ্রীষ্ম', months: 'Boishakh, Joishtho', from: [4, 14], items: ['aam', 'kathal', 'lichu', 'jam', 'tormuj', 'anaros', 'jhinga', 'chichinga', 'potol', 'dherosh', 'borboti', 'shosha', 'pui', 'data', 'kolmi', 'echor', 'korola'] },
   { id: 'borsha', name: 'Borsha', bn: 'বর্ষা', months: 'Asharh, Srabon', from: [6, 15], items: ['aam', 'kathal', 'anaros', 'peyara', 'kakrol', 'chichinga', 'jhinga', 'dherosh', 'kochur_loti', 'kochu', 'pui', 'kolmi', 'chal_kumra', 'kamranga', 'dab'] },
   { id: 'shorot', name: 'Shorot', bn: 'শরৎ', months: 'Bhadro, Ashwin', from: [8, 16], items: ['ata', 'peyara', 'malta', 'jolpai', 'kamranga', 'chal_kumra', 'kumra', 'kochu', 'mocha', 'kakrol', 'laushak'] },
@@ -265,8 +265,8 @@ const SEASONS = [
   { id: 'sheet', name: 'Sheet', bn: 'শীত', months: 'Poush, Magh', from: [12, 16], items: ['cauliflower', 'cabbage', 'shim', 'tomato', 'gajor', 'mula', 'beet', 'olkopi', 'broccoli', 'capsicum', 'motorshuti', 'palong', 'lalshak', 'dhonepata', 'misti_alu', 'newpotato', 'boroi', 'komola', 'lau'] },
   { id: 'boshonto', name: 'Boshonto', bn: 'বসন্ত', months: 'Falgun, Choitro', from: [2, 13], items: ['sajna', 'tormuj', 'echor', 'korola', 'data', 'kumra', 'boroi', 'shosha', 'tomato', 'lau'] },
 ]
-const YEAR_ROUND = ['potato', 'onion', 'rosun', 'ada', 'chili', 'brinjal', 'lebu', 'pepe', 'kacha_kola', 'kola', 'dab', 'khejur', 'apel', 'angur', 'dalim', 'naspati']
-function seasonNow(d = new Date(Date.now() + 6 * 3600e3)) {
+export const YEAR_ROUND = ['potato', 'onion', 'rosun', 'ada', 'chili', 'brinjal', 'lebu', 'pepe', 'kacha_kola', 'kola', 'dab', 'khejur', 'apel', 'angur', 'dalim', 'naspati']
+export function seasonNow(d = new Date(Date.now() + 6 * 3600e3)) {
   const md = (d.getUTCMonth() + 1) * 100 + d.getUTCDate()
   if (md >= 1216 || md < 213) return 'sheet'
   let cur = 'boshonto'

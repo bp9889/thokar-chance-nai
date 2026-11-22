@@ -51,8 +51,8 @@ export function useCountUp(target: number, ms = 600) {
   return v
 }
 
-const ASK: Record<string, string> = { potato: 'Adha kilo alu', cauliflower: 'Ekta fulkopi', chili: '250 gram kacha morich', tomato: 'Adha kilo tomato', lalshak: 'Ek aati lal shak' }
-function replyLine(g: Bazar['game']) {
+export const ASK: Record<string, string> = { potato: 'Adha kilo alu', cauliflower: 'Ekta fulkopi', chili: '250 gram kacha morich', tomato: 'Adha kilo tomato', lalshak: 'Ek aati lal shak' }
+export function replyLine(g: Bazar['game']) {
   if (g.direction === 'in') return `Thik dam bolsen! Apni to pakka bazari. Ajke ${g.real}.`
   if (g.direction === 'over') return g.guess - g.hi > 40 ? `Arre bhai, eto dite hobe na! Ajke matro ${g.real}.` : `Ektu beshi bollen. Usual price ${g.real}.`
   return g.lo - g.guess > 20 ? `Eto kom e? Bhai, amar o to songshar ache! Dam ${g.real}.` : `Ektu kom hoye gelo. Usual price ${g.real}.`
