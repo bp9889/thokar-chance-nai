@@ -373,31 +373,3 @@ export function AppBanner() {
     </div>
   )
 }
-
-/* ---------- Cha khawan: optional thank-you by bKash QR (Send Money) ---------- */
-// bKash Send Money QR, rebuilt from the exact data in the bKash app's Bangla QR card: black on white,
-// error correction M (61x61 squares, easier to read off a screen than the card's 77x77).
-// The SVG is shown on the page (sharp at any size); the PNG is what "QR save korun" downloads.
-// The number itself is never printed on the page. Set BKASH_QR to '' to hide the whole card.
-export const BKASH_QR = '/bkash-qr.svg'
-const BKASH_QR_PNG = '/bkash-qr.png'
-
-export function ChaKhawan() {
-  if (!BKASH_QR) return null
-  return (
-    <section aria-labelledby="cha-h" className="rv rv-slap relative mt-10 overflow-hidden rounded-[10px] bg-[#F4E3C1] p-6 text-[#1A0B07] shadow-[6px_6px_0_var(--deep)] md:p-8">
-      <div aria-hidden className="absolute inset-0" style={halftone} />
-      <div className="relative flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
-        <div className="max-w-[46ch]">
-          <h2 id="cha-h" style={extrude('clamp(2rem,5vw,3rem)', '#FFD21F', '#C4161C')}>Ekta <span style={{ fontFamily: POSTER, fontSize: '.62em' }}>CHA</span> khawan?</h2>
-          <p className="mt-3 text-lg leading-snug">Thokar theke bachle, ekta cha khawan :3 Site ta free, free e thakbe. Puro optional, kintu ek cup cha te onek motivation.</p>
-          <p className="mt-2 text-sm opacity-75">bKash ba bank app er <b>Scan QR</b> diye ei QR scan kore Send Money korun. Phone e dekhle QR ta save kore rakhun. bKash er normal send money charge lagte pare.</p>
-        </div>
-        <div className="flex flex-col items-start gap-3 md:items-center">
-          <img src={BKASH_QR} alt="bKash Send Money QR code" width={280} height={280} loading="lazy" className="aspect-square w-full max-w-[280px] rounded-[6px] bg-white ring-2 ring-[#1A0B07]" />
-          <a href={BKASH_QR_PNG} download="thokar-chance-nai-bkash-qr.png" className="kc-press inline-grid h-12 place-items-center rounded-[4px] bg-[#C4161C] px-5 text-lg font-bold text-[#FFD21F] shadow-[3px_3px_0_#1A0B07]">QR save korun</a>
-        </div>
-      </div>
-    </section>
-  )
-}

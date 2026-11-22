@@ -9,7 +9,7 @@ import seed from '../../public/prices.json'
 // Prices as of this build, so the page shows real prices even before (or without) the fetch below.
 applyLive(seed as unknown as Live)
 import { ModeSwitch, Sky, THEME_CSS, useMode } from './theme'
-import { AppBanner, AppCard, ChaKhawan, ListControl, ListFab, OfflineNote, SeasonCalendar, ShareList, ShostaBoard, ThokseNaki, Trend } from './features'
+import { AppBanner, AppCard, ListControl, ListFab, OfflineNote, SeasonCalendar, ShareList, ShostaBoard, ThokseNaki, Trend } from './features'
 
 const chat: ChatSkin = {
   wrap: 'bg-[#F4E3C1] text-[#1A0B07] shadow-[8px_8px_0_var(--deep)]', seller: 'bg-white text-[#1A0B07] ring-2 ring-[#1A0B07]', me: 'bg-[#C4161C] text-[#FFF1D6] ring-2 ring-[#1A0B07]',
@@ -299,7 +299,6 @@ export default function Site() {
       {page === 'home' && <ListFab b={b} open={() => go('list')} />}
       <footer className="relative z-[1] mx-auto max-w-[1180px] px-4 pb-28 md:px-6">
         <AppCard />
-        <ChaKhawan />
         <div className="flex flex-col gap-4 border-t border-[var(--line)] pt-8 md:flex-row md:items-end md:justify-between">
           <p className="max-w-[70ch] text-sm text-[var(--soft)]">Dorshokder jonno special ঘোষণা: the main bazar items update automatically every day from TCB's Dhaka market report; the rest are marked approx. They are averages, so your shop may be a little higher or lower. Every price shows when it was last updated.</p>
           <p className="text-xl" style={{ fontFamily: POSTER, color: 'var(--brand)' }}>THOKAR <span style={{ fontFamily: BN }}>চান্স</span> NAI</p>
