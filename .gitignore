@@ -5,3 +5,4 @@ dist
 !public/icons/*.png
 !android/app/src/main/res/**/*.png
 !public/og.png
+!public/bkash-qr.png
