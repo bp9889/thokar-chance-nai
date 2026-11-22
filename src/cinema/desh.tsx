@@ -6,7 +6,7 @@ import type React from 'react'
 export const DESH_CSS = `
 .dside { position: fixed; top: 0; bottom: 0; width: var(--gut); z-index: 0; pointer-events: none; overflow: hidden; }
 .dside-l { left: 0; } .dside-r { right: 0; transform: scaleX(-1); }
-.day-only, .night-only { transition: opacity 900ms ease; }
+.day-only, .night-only { }
 .tcn[data-m="night"] .day-only { opacity: 0; } .tcn[data-m="day"] .night-only { opacity: 0; }
 @media (max-width: 1339px) { .dside { display: none; } }
 

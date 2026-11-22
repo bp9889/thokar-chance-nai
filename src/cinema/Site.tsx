@@ -121,7 +121,7 @@ export default function Site() {
       <PageFx fx="shutter" phase={phase} />
 
       <header className="relative z-10 mx-auto flex max-w-[1180px] flex-wrap items-center justify-between gap-3 px-4 pt-5 md:px-6">
-        <button type="button" onClick={() => go('home')} className="cursor-pointer text-xl md:text-2xl" style={{ fontFamily: POSTER, color: 'var(--brand)', transition: 'color 400ms ease' }}>THOKAR <span style={{ fontFamily: BN }}>চান্স</span> NAI</button>
+        <button type="button" onClick={() => go('home')} className="cursor-pointer text-xl md:text-2xl" style={{ fontFamily: POSTER, color: 'var(--brand)' }}>THOKAR <span style={{ fontFamily: BN }}>চান্স</span> NAI</button>
         <nav aria-label="Main" className="flex flex-wrap items-center gap-2 text-lg">
           {page === 'home' && <><a href="#dor-dam" className="rounded-full px-4 py-2 hover:bg-[var(--hover)]">Dor-দাম</a><a href="#thokse-naki" className="hidden rounded-full px-4 py-2 hover:bg-[var(--hover)] sm:inline">Thokse naki?</a><a href="#now-cholche" className="rounded-full px-4 py-2 hover:bg-[var(--hover)]">Now চলছে</a></>}
           <ModeSwitch mode={mode} toggle={toggle} />
