@@ -226,8 +226,14 @@ export function BudgetMode({ b }: { b: Bazar }) {
               </ul>
               <p className="mt-3 text-lg font-bold">Mot {tk(plan.lo, plan.hi)} <span className="font-normal opacity-70">/ budget Tk {budget}</span></p>
               {plan.left.length > 0 && <p className="text-sm opacity-75">Budget e dhorlo na: {plan.left.join(', ')}.</p>}
-              <button type="button" onClick={() => { b.setAll(Object.fromEntries(plan.picked.map((r) => [r.id, r.n]))); setSaved(true) }} className="kc-press mt-4 h-12 cursor-pointer rounded-[4px] bg-[#1A0B07] px-5 font-bold text-[#FFD21F]">{saved ? 'Amar list e boshano hoyeche' : 'Ei list ta nibo'}</button>
-              {!saved && <p className="mt-1 text-xs opacity-70">Apnar ekhonkar list ta bodle jabe.</p>}
+              {!saved ? (
+                <>
+                  <button type="button" onClick={() => { b.setAll(Object.fromEntries(plan.picked.map((r) => [r.id, r.n]))); setSaved(true); document.getElementById('amar-list-card')?.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' }) }} className="kc-press mt-4 h-12 cursor-pointer rounded-[4px] bg-[#1A0B07] px-5 font-bold text-[#FFD21F]">Ei list ta use korbo</button>
+                  <p className="mt-1 text-xs opacity-70">Tap korle apnar Amar list e ei jinish gula boshe jabe (ager list ta bodle jabe).</p>
+                </>
+              ) : (
+                <p className="kc-stamp mt-4 rounded-[4px] bg-[#1F7A3A] px-4 py-3 font-bold text-white" role="status">✓ Hoye geche! Ei {plan.picked.length} ta jinish ekhon upore Amar list e ache.</p>
+              )}
             </>
           )}
         </div>

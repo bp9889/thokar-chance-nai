@@ -157,7 +157,7 @@ export function ListPage({ b, skin, goHome, share, extra }: { b: Bazar; skin: Li
     <div className={cn('mx-auto max-w-[1180px] px-4 pt-6 pb-36 md:px-6', skin.page)}>
       <button type="button" onClick={goHome} className={cn('kc-press h-11 cursor-pointer rounded-full px-5 text-lg', skin.btn)}>← Back to the show</button>
       <div className="mt-8 grid gap-6 md:grid-cols-[1.15fr_1fr]">
-        <section className={cn('rounded-[10px] p-6 md:p-8', skin.card, skin.enter)}>
+        <section id="amar-list-card" className={cn('scroll-mt-4 rounded-[10px] p-6 md:p-8', skin.card, skin.enter)}>
           <div className="flex flex-wrap items-start justify-between gap-3">
             {skin.title('Amar bazar লিস্ট')}
             {!b.list.empty && <ClearList clear={() => b.setAll({})} />}
@@ -165,13 +165,16 @@ export function ListPage({ b, skin, goHome, share, extra }: { b: Bazar; skin: Li
           <p className={cn('mt-2', skin.muted)}>Printed like a ticket stub. We add up the usual prices so you know the cash to carry.</p>
           <ul className="mt-4">
             {b.list.rows.map((r, k) => (
-              <li key={r.id} className={cn('kc-row flex flex-wrap items-center gap-3 py-3', skin.rowLine)} style={{ animationDelay: `${120 + k * 60}ms` }}>
-                <img src={r.img} alt="" className="size-10" />
-                <span className="min-w-0 flex-1 text-xl font-bold">{r.local} <span className={cn('text-sm font-normal', skin.muted)}>{r.qty}</span></span>
-                <button type="button" onClick={() => b.dec(r.id)} aria-label={`Less ${r.name}`} className="kc-press size-11 cursor-pointer rounded-full bg-current/10 text-xl"><span>−</span></button>
-                <button type="button" onClick={() => b.add(r.id)} aria-label={`More ${r.name}`} className="kc-press size-11 cursor-pointer rounded-full bg-current/10 text-xl"><span>+</span></button>
-                <span className="w-24 text-right font-semibold tabular-nums">{r.line}</span>
-                <button type="button" onClick={() => b.drop(r.id)} aria-label={`Remove ${r.name}`} className="kc-press size-11 cursor-pointer rounded-full text-xl opacity-60">×</button>
+              <li key={r.id} className={cn('kc-row grid grid-cols-[40px_minmax(0,1fr)_auto] items-center gap-x-3 gap-y-2 py-3 md:grid-cols-[40px_minmax(0,1fr)_auto_6.5rem_44px]', skin.rowLine)} style={{ animationDelay: `${120 + k * 60}ms` }}>
+                <img src={r.img} alt="" className="size-10 md:order-1" />
+                <span className="min-w-0 md:order-2"><span className="block text-xl leading-tight font-bold">{r.local}</span><span className={cn('block text-sm', skin.muted)}>{r.bn}</span></span>
+                <span className="text-right font-semibold whitespace-nowrap tabular-nums md:order-4">{r.line}</span>
+                <div className="col-start-2 flex items-center md:order-3 md:col-start-auto">
+                  <button type="button" onClick={() => b.dec(r.id)} aria-label={`Less ${r.name}`} className="kc-press size-11 shrink-0 cursor-pointer rounded-full bg-current/10 text-xl"><span>−</span></button>
+                  <span className="min-w-[4.5rem] px-1 text-center font-semibold whitespace-nowrap tabular-nums" aria-live="polite">{r.qty}</span>
+                  <button type="button" onClick={() => b.add(r.id)} aria-label={`More ${r.name}`} className="kc-press size-11 shrink-0 cursor-pointer rounded-full bg-current/10 text-xl"><span>+</span></button>
+                </div>
+                <button type="button" onClick={() => b.drop(r.id)} aria-label={`Remove ${r.name}`} className="kc-press size-11 cursor-pointer justify-self-end rounded-full text-xl opacity-60 md:order-5">×</button>
               </li>
             ))}
             {b.list.empty && <li className="py-6 text-xl">List khali. Now চলছে theke "+ List e rakhun" tap korun.</li>}
