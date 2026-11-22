@@ -373,3 +373,26 @@ export function AppBanner() {
     </div>
   )
 }
+
+/* ---------- Post credit scene: a thank-you to the director, on Instagram ---------- */
+const INSTAGRAM = 'https://www.instagram.com/bp._.09/'
+
+export function PostCredit() {
+  return (
+    <section aria-labelledby="pc-h" className="rv rv-slap relative mt-10 overflow-hidden rounded-[10px] bg-[#1A0B07] p-6 text-[#F4E3C1] shadow-[6px_6px_0_var(--deep)] ring-2 ring-[#FFD21F]/40 md:p-8">
+      <div className="relative flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
+        <div className="max-w-[52ch]">
+          <h2 id="pc-h" style={extrude('clamp(1.9rem,4.6vw,2.8rem)', '#FFD21F', '#C4161C')}>
+            Post <span style={{ fontFamily: POSTER, fontSize: '.62em' }}>CREDIT</span> scene <span aria-hidden style={{ textShadow: 'none' }}>🎬</span>
+          </h2>
+          <p className="mt-3 text-lg leading-snug">Ei site ta banaise ekjon, jake nijeo bazar e onek bar thokano hoise. Apni jodi aaj thokar theke bechen, director ke ekta thank you diye jan. Taka lagbe na, ekta DM ei hobe :3</p>
+        </div>
+        <a href={INSTAGRAM} target="_blank" rel="noopener noreferrer"
+          className="kc-press inline-flex h-12 shrink-0 items-center gap-2 self-start rounded-[4px] bg-[#FFD21F] px-5 text-lg font-bold text-[#1A0B07] shadow-[3px_3px_0_#C4161C] md:self-center">
+          Director ke thank you din
+          <span className="sr-only"> (Instagram, @bp._.09, opens in a new tab)</span>
+        </a>
+      </div>
+    </section>
+  )
+}
