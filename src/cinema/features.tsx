@@ -179,43 +179,6 @@ export function ThokseNaki() {
   )
 }
 
-/* ---------- budget bar on Amar list ---------- */
-/** Type a budget; the bar fills as items are added. Solid part = lowest likely total, striped = up to the highest. */
-export function BudgetBar({ b }: { b: Bazar }) {
-  const [budget, setBudget] = useState(() => { try { return localStorage.getItem('tcn-budget') || '' } catch { return '' } })
-  useEffect(() => { try { if (budget) localStorage.setItem('tcn-budget', budget); else localStorage.removeItem('tcn-budget') } catch { /* private mode */ } }, [budget])
-  const cap = Number(budget) || 0
-  const { lo, hi } = b.list
-  const state = !cap ? null : hi <= cap ? 'ok' : lo <= cap ? 'maybe' : 'over'
-  const color = state === 'ok' ? '#1F7A3A' : state === 'maybe' ? '#B8520F' : '#C4161C'
-  const pct = (n: number) => `${Math.min(100, cap ? (n / cap) * 100 : 0)}%`
-  return (
-    <div className="mt-4 rounded-[8px] bg-[#1A0B07]/[.06] p-4">
-      <label className="flex flex-wrap items-center gap-2">
-        <span className="font-bold">Amar budget</span>
-        <span className="flex h-11 items-center gap-1.5 rounded-[4px] bg-white px-3 ring-2 ring-[#1A0B07]">
-          <span className="font-bold">Tk</span>
-          <input type="number" inputMode="numeric" min={0} step={50} value={budget} onChange={(e) => setBudget(e.target.value)} placeholder="eg. 1000" className="w-24 bg-transparent text-lg font-bold outline-none placeholder:font-normal placeholder:opacity-40" aria-label="Budget in taka" />
-        </span>
-        {!cap && <span className="text-sm opacity-70">Budget dile bar dekhabe koto gelo.</span>}
-      </label>
-      {cap > 0 && (
-        <div className="mt-3" aria-live="polite">
-          <div className="relative h-4 overflow-hidden rounded-full bg-[#1A0B07]/10" role="meter" aria-valuemin={0} aria-valuemax={cap} aria-valuenow={Math.min(hi, cap)} aria-label="Budget used">
-            <div className="absolute inset-y-0 left-0 rounded-full transition-[width] duration-500" style={{ width: pct(hi), background: `repeating-linear-gradient(45deg, ${color} 0 6px, ${color}99 6px 12px)` }} />
-            <div className="absolute inset-y-0 left-0 rounded-full transition-[width] duration-500" style={{ width: pct(lo), background: color }} />
-          </div>
-          <p className="mt-2 font-semibold" style={{ color }}>
-            {state === 'ok' && <>✓ Budget e hoye jabe. Lagbe {tk(lo, hi)}, kom koreo Tk {cap - hi} baki thakbe.</>}
-            {state === 'maybe' && <>Ektu tight! Mama beshi dam chaile Tk {hi - cap} porjonto beshi lagte pare.</>}
-            {state === 'over' && <>Budget theke Tk {lo - cap} beshi! Kichu jinish komaan.</>}
-          </p>
-        </div>
-      )}
-    </div>
-  )
-}
-
 /* ---------- share the list ---------- */
 export function listText(b: Bazar) {
   const lines = b.list.rows.map((r) => `• ${r.local} ${r.qty}: ${r.line}`)
