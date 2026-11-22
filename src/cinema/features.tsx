@@ -179,66 +179,40 @@ export function ThokseNaki() {
   )
 }
 
-/* ---------- budget mode ---------- */
-// Roughly 3 to 4 days of bazar for a family of 4, cheapest staples first.
-export const PLAN: [string, number][] = [
-  ['potato', 2], ['onion', 1], ['chili', 0.25], ['rosun', 0.25], ['ada', 0.25], ['lalshak', 2], ['brinjal', 1], ['tomato', 0.5], ['lebu', 1],
-  ['cauliflower', 1], ['pepe', 1], ['shim', 0.5], ['palong', 2], ['mula', 1], ['kola', 2], ['lau', 1], ['gajor', 0.5], ['cabbage', 1], ['peyara', 1], ['malta', 0.5],
-]
-export function BudgetMode({ b }: { b: Bazar }) {
-  const [budget, setBudget] = useState('500')
-  const [fam, setFam] = useState(4)
-  const [plan, setPlan] = useState<null | { picked: { id: string; n: number; lo: number; hi: number }[]; left: string[]; lo: number; hi: number }>(null)
-  const [saved, setSaved] = useState(false)
-  const make = () => {
-    const cap = Number(budget) || 0
-    let lo = 0, hi = 0
-    const picked: { id: string; n: number; lo: number; hi: number }[] = [], left: string[] = []
-    for (const [id, q4] of PLAN) {
-      const i = BY[id]
-      if (!i || i.off || !(i.max > 0)) continue
-      const step = i.unit === 'kg' ? 0.25 : 1
-      const n = Math.max(step, Math.round((q4 * fam) / 4 / step) * step)
-      const a = Math.round(i.min * n), z = Math.round(i.max * n)
-      if (hi + z <= cap) { picked.push({ id, n, lo: a, hi: z }); lo += a; hi += z } else left.push(i.local)
-    }
-    setPlan({ picked, left, lo, hi }); setSaved(false)
-  }
+/* ---------- budget bar on Amar list ---------- */
+/** Type a budget; the bar fills as items are added. Solid part = lowest likely total, striped = up to the highest. */
+export function BudgetBar({ b }: { b: Bazar }) {
+  const [budget, setBudget] = useState(() => { try { return localStorage.getItem('tcn-budget') || '' } catch { return '' } })
+  useEffect(() => { try { if (budget) localStorage.setItem('tcn-budget', budget); else localStorage.removeItem('tcn-budget') } catch { /* private mode */ } }, [budget])
+  const cap = Number(budget) || 0
+  const { lo, hi } = b.list
+  const state = !cap ? null : hi <= cap ? 'ok' : lo <= cap ? 'maybe' : 'over'
+  const color = state === 'ok' ? '#1F7A3A' : state === 'maybe' ? '#B8520F' : '#C4161C'
+  const pct = (n: number) => `${Math.min(100, cap ? (n / cap) * 100 : 0)}%`
   return (
-    <section className="rounded-[10px] bg-[#F4E3C1] p-6 text-[#1A0B07] shadow-[8px_8px_0_var(--deep)] md:p-8" aria-labelledby="bm-h">
-      <h2 id="bm-h" style={extrude('clamp(2.2rem,5vw,3.2rem)', '#FFD21F', '#C4161C')}>Budget <span style={{ fontFamily: POSTER, fontSize: '.6em' }}>MODE</span></h2>
-      <p className="mt-2">Pocket e koto ache bolen, ar koy jon khaben. Amra 3-4 din er bazar list baniye dibo, max dam dhore, jate taka kom na pore.</p>
-      <form className="mt-5 flex flex-wrap items-end gap-4" onSubmit={(e) => { e.preventDefault(); make() }}>
-        <label><span className="mb-1 block text-sm font-bold">Amar kache</span>
-          <span className="flex h-12 items-center gap-2 rounded-[4px] bg-white px-3 ring-2 ring-[#1A0B07]"><span className="font-bold">Tk</span><input type="number" inputMode="numeric" min={50} step={50} value={budget} onChange={(e) => setBudget(e.target.value)} className="w-24 bg-transparent text-xl font-bold outline-none" /></span>
-        </label>
-        <fieldset><legend className="mb-1 text-sm font-bold">Koy jon?</legend>
-          <div className="flex gap-1.5">{[1, 2, 3, 4, 5, 6].map((f) => <button key={f} type="button" aria-pressed={fam === f} onClick={() => setFam(f)} className={cn('kc-press size-12 cursor-pointer rounded-[4px] text-lg font-bold ring-2 ring-[#1A0B07]', fam === f ? 'bg-[#1A0B07] text-[#FFD21F]' : 'bg-white')}>{f}{f === 6 ? '+' : ''}</button>)}</div>
-        </fieldset>
-        <button type="submit" className="kc-press h-12 cursor-pointer rounded-[4px] bg-[#C4161C] px-5 text-lg font-bold text-[#FFD21F] shadow-[3px_3px_0_#1A0B07]">List baniye dao</button>
-      </form>
-      {plan && (
-        <div className="pw-slap mt-6 rounded-[8px] bg-[#FFF8EA] p-4" style={{ animationDuration: '380ms' }}>
-          {plan.picked.length === 0 ? <p className="text-lg">Ei taka te kichui dhorlo na. Budget ektu barai?</p> : (
-            <>
-              <ul className="grid gap-x-6 sm:grid-cols-2">
-                {plan.picked.map((r) => <li key={r.id} className="flex items-center gap-2 border-b border-dashed border-[#1A0B07]/20 py-1.5"><img src={IMG[r.id]} alt="" className="size-7" /><span className="flex-1 font-semibold">{BY[r.id].local} <span className="text-sm font-normal opacity-70">{qtyText(BY[r.id], r.n)}</span></span><span className="text-sm tabular-nums">{tk(r.lo, r.hi)}</span></li>)}
-              </ul>
-              <p className="mt-3 text-lg font-bold">Mot {tk(plan.lo, plan.hi)} <span className="font-normal opacity-70">/ budget Tk {budget}</span></p>
-              {plan.left.length > 0 && <p className="text-sm opacity-75">Budget e dhorlo na: {plan.left.join(', ')}.</p>}
-              {!saved ? (
-                <>
-                  <button type="button" onClick={() => { b.setAll(Object.fromEntries(plan.picked.map((r) => [r.id, r.n]))); setSaved(true); document.getElementById('amar-list-card')?.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' }) }} className="kc-press mt-4 h-12 cursor-pointer rounded-[4px] bg-[#1A0B07] px-5 font-bold text-[#FFD21F]">Ei list ta use korbo</button>
-                  <p className="mt-1 text-xs opacity-70">Tap korle apnar Amar list e ei jinish gula boshe jabe (ager list ta bodle jabe).</p>
-                </>
-              ) : (
-                <p className="kc-stamp mt-4 rounded-[4px] bg-[#1F7A3A] px-4 py-3 font-bold text-white" role="status">✓ Hoye geche! Ei {plan.picked.length} ta jinish ekhon upore Amar list e ache.</p>
-              )}
-            </>
-          )}
+    <div className="mt-4 rounded-[8px] bg-[#1A0B07]/[.06] p-4">
+      <label className="flex flex-wrap items-center gap-2">
+        <span className="font-bold">Amar budget</span>
+        <span className="flex h-11 items-center gap-1.5 rounded-[4px] bg-white px-3 ring-2 ring-[#1A0B07]">
+          <span className="font-bold">Tk</span>
+          <input type="number" inputMode="numeric" min={0} step={50} value={budget} onChange={(e) => setBudget(e.target.value)} placeholder="eg. 1000" className="w-24 bg-transparent text-lg font-bold outline-none placeholder:font-normal placeholder:opacity-40" aria-label="Budget in taka" />
+        </span>
+        {!cap && <span className="text-sm opacity-70">Budget dile bar dekhabe koto gelo.</span>}
+      </label>
+      {cap > 0 && (
+        <div className="mt-3" aria-live="polite">
+          <div className="relative h-4 overflow-hidden rounded-full bg-[#1A0B07]/10" role="meter" aria-valuemin={0} aria-valuemax={cap} aria-valuenow={Math.min(hi, cap)} aria-label="Budget used">
+            <div className="absolute inset-y-0 left-0 rounded-full transition-[width] duration-500" style={{ width: pct(hi), background: `repeating-linear-gradient(45deg, ${color} 0 6px, ${color}99 6px 12px)` }} />
+            <div className="absolute inset-y-0 left-0 rounded-full transition-[width] duration-500" style={{ width: pct(lo), background: color }} />
+          </div>
+          <p className="mt-2 font-semibold" style={{ color }}>
+            {state === 'ok' && <>✓ Budget e hoye jabe. Lagbe {tk(lo, hi)}, kom koreo Tk {cap - hi} baki thakbe.</>}
+            {state === 'maybe' && <>Kan e kan! Dam beshi hole Tk {hi - cap} beshi lagte pare.</>}
+            {state === 'over' && <>Budget theke Tk {lo - cap} beshi! Kichu jinish komaan.</>}
+          </p>
         </div>
       )}
-    </section>
+    </div>
   )
 }
 

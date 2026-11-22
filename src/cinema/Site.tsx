@@ -9,7 +9,7 @@ import seed from '../../public/prices.json'
 // Prices as of this build, so the page shows real prices even before (or without) the fetch below.
 applyLive(seed as unknown as Live)
 import { ModeSwitch, Sky, THEME_CSS, useMode } from './theme'
-import { AppBanner, AppCard, BudgetMode, ListControl, ListFab, OfflineNote, SeasonCalendar, ShareList, ShostaBoard, ThokseNaki, Trend } from './features'
+import { AppBanner, AppCard, BudgetBar, ListControl, ListFab, OfflineNote, SeasonCalendar, ShareList, ShostaBoard, ThokseNaki, Trend } from './features'
 
 const chat: ChatSkin = {
   wrap: 'bg-[#F4E3C1] text-[#1A0B07] shadow-[8px_8px_0_var(--deep)]', seller: 'bg-white text-[#1A0B07] ring-2 ring-[#1A0B07]', me: 'bg-[#C4161C] text-[#FFF1D6] ring-2 ring-[#1A0B07]',
@@ -247,7 +247,7 @@ export default function Site() {
           <SeasonCalendar onPick={pick} />
         </main>
       ) : (
-        <div className="relative z-[1]"><ListPage b={b} skin={list} goHome={() => go('home')} share={<ShareList b={b} />} extra={<BudgetMode b={b} />} /></div>
+        <div className="relative z-[1]"><ListPage b={b} skin={list} goHome={() => go('home')} share={<ShareList b={b} />} budget={<BudgetBar b={b} />} /></div>
       )}
 
       {page === 'home' && <ListFab b={b} open={() => go('list')} />}

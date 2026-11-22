@@ -150,7 +150,7 @@ function ClearList({ clear }: { clear: () => void }) {
 }
 
 /** Page 2: Birot (half-a-kilo guide) + Amar bazar list. */
-export function ListPage({ b, skin, goHome, share, extra }: { b: Bazar; skin: ListSkin; goHome: () => void; share?: React.ReactNode; extra?: React.ReactNode }) {
+export function ListPage({ b, skin, goHome, share, budget }: { b: Bazar; skin: ListSkin; goHome: () => void; share?: React.ReactNode; budget?: React.ReactNode }) {
   const lo = useCountUp(b.list.lo), hi = useCountUp(b.list.hi)
   const carry = useCountUp(Number(b.list.carry.replace(/\D/g, '')))
   return (
@@ -162,6 +162,7 @@ export function ListPage({ b, skin, goHome, share, extra }: { b: Bazar; skin: Li
             {skin.title('Amar bazar লিস্ট')}
             {!b.list.empty && <ClearList clear={() => b.setAll({})} />}
           </div>
+          {budget}
           <p className={cn('mt-2', skin.muted)}>Printed like a ticket stub. We add up the usual prices so you know the cash to carry.</p>
           <ul className="mt-4">
             {b.list.rows.map((r, k) => (
@@ -202,7 +203,6 @@ export function ListPage({ b, skin, goHome, share, extra }: { b: Bazar; skin: Li
           </ul>
         </section>
       </div>
-      {extra && <div className="mt-8">{extra}</div>}
     </div>
   )
 }
