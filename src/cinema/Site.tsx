@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useBazar } from '@/lib/useBazar'
 import { IMG, ITEMS, applyLive, type Live } from '@/lib/data'
 import { cn } from '@/lib/utils'
@@ -22,20 +22,32 @@ const list: ListSkin = {
   title: (s) => <h2 className="pw-brush" style={extrude('clamp(2.6rem,6vw,4rem)', '#C4161C', '#1A0B07')}>{s}</h2>,
 }
 
-/** Two pages (#amar-list) with the dokan-shutter transition. */
+/** Two pages (#amar-list) with the dokan-shutter transition. Opening the list adds a history entry,
+ *  so the phone's back button (and the app's) returns to the home page instead of leaving the site. */
 function usePage() {
   const read = (): Page => (location.hash === '#amar-list' ? 'list' : 'home')
   const [page, setPage] = useState<Page>(read)
   const [phase, setPhase] = useState<'idle' | 'out' | 'in'>('idle')
   const [outMs, inMs] = FX_MS.shutter
-  const go = (p: Page) => {
-    if (p === page || phase !== 'idle') return
-    const swap = () => { setPage(p); history.replaceState(null, '', p === 'list' ? '#amar-list' : location.pathname); scrollTo({ top: 0 }) }
-    if (matchMedia('(prefers-reduced-motion: reduce)').matches) { swap(); return }
+  const busy = useRef(false)
+  const show = (p: Page) => {
+    if (busy.current) { setPage(p); return }
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) { setPage(p); scrollTo({ top: 0 }); return }
+    busy.current = true
     setPhase('out')
-    setTimeout(() => { swap(); setPhase('in'); setTimeout(() => setPhase('idle'), inMs) }, outMs)
+    setTimeout(() => { setPage(p); scrollTo({ top: 0 }); setPhase('in'); setTimeout(() => { setPhase('idle'); busy.current = false }, inMs) }, outMs)
   }
-  useEffect(() => { const f = () => setPage(read()); addEventListener('hashchange', f); return () => removeEventListener('hashchange', f) }, [])
+  const go = (p: Page) => {
+    if (p === page) return
+    if (p === 'list') { history.pushState({ tcn: 'list' }, '', '#amar-list'); show('list') }
+    else if (history.state?.tcn === 'list') history.back() // popstate below runs the transition
+    else { history.replaceState(null, '', location.pathname + location.search); show('home') }
+  }
+  useEffect(() => {
+    const f = () => { const p = read(); setPage((cur) => { if (cur !== p) setTimeout(() => show(p), 0); return cur }) }
+    addEventListener('popstate', f)
+    return () => removeEventListener('popstate', f)
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
   return { page, phase, go }
 }
 
