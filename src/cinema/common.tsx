@@ -5,7 +5,6 @@ import { cn } from '@/lib/utils'
 
 export const BN = "'Anek Bangla Variable', sans-serif"
 export const POSTER = "'Bungee', sans-serif"
-export const NEON = "'Tilt Neon Variable', sans-serif"
 export const halftone: React.CSSProperties = { backgroundImage: 'radial-gradient(rgba(26,11,7,.16) 1.2px, transparent 1.6px)', backgroundSize: '7px 7px' }
 export const star = 'polygon(50% 0%,61% 14%,79% 9%,79% 28%,96% 35%,85% 50%,96% 65%,79% 72%,79% 91%,61% 86%,50% 100%,39% 86%,21% 91%,21% 72%,4% 65%,15% 50%,4% 35%,21% 28%,21% 9%,39% 14%)'
 /** A solid outline made of text-shadows. -webkit-text-stroke draws the inner overlap lines of these fonts, so it is not used. */
