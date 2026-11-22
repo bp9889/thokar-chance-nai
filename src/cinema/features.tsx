@@ -207,7 +207,7 @@ export function BudgetBar({ b }: { b: Bazar }) {
           </div>
           <p className="mt-2 font-semibold" style={{ color }}>
             {state === 'ok' && <>✓ Budget e hoye jabe. Lagbe {tk(lo, hi)}, kom koreo Tk {cap - hi} baki thakbe.</>}
-            {state === 'maybe' && <>Kan e kan! Dam beshi hole Tk {hi - cap} beshi lagte pare.</>}
+            {state === 'maybe' && <>Ektu tight! Mama beshi dam chaile Tk {hi - cap} porjonto beshi lagte pare.</>}
             {state === 'over' && <>Budget theke Tk {lo - cap} beshi! Kichu jinish komaan.</>}
           </p>
         </div>
