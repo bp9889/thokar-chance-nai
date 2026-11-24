@@ -1,10 +1,10 @@
 {
- "updated": "2026-11-24",
+ "updated": "2026-11-25",
  "note": "Seed data from Dhaka market reports (news), Oct to Nov 2026. Replaced automatically by scripts/update-prices.mjs.",
  "sources": {
   "TCB": {
-   "url": "https://objectstorage.ap-dcc-gazipur-1.oraclecloud15.com/n/axvjbnqprylg/b/V2Ministry/o/office-tcb/2026/10/a3c0e7b0-9490-4539-8739-6d7af145a062.xlsx",
-   "date": "2026-11-23"
+   "url": "https://objectstorage.ap-dcc-gazipur-1.oraclecloud15.com/n/axvjbnqprylg/b/V2Ministry/o/office-tcb/2026/10/0b058b56-c1a4-4ffe-a224-492a70c89a91.xlsx",
+   "date": "2026-11-24"
   }
  },
  "items": {
@@ -12,7 +12,7 @@
    "min": 25,
    "max": 30,
    "unit": "kg",
-   "date": "2026-11-23",
+   "date": "2026-11-24",
    "source": "TCB",
    "week": [
     25,
@@ -38,7 +38,7 @@
    "min": 45,
    "max": 55,
    "unit": "kg",
-   "date": "2026-11-23",
+   "date": "2026-11-24",
    "source": "TCB",
    "week": [
     45,
@@ -78,7 +78,7 @@
    "min": 50,
    "max": 110,
    "unit": "kg",
-   "date": "2026-11-23",
+   "date": "2026-11-24",
    "source": "TCB",
    "week": [
     50,
@@ -97,7 +97,7 @@
    "min": 80,
    "max": 120,
    "unit": "kg",
-   "date": "2026-11-23",
+   "date": "2026-11-24",
    "source": "TCB",
    "week": [
     60,
@@ -108,7 +108,7 @@
     180
    ],
    "year": [
-    180,
+    160,
     200
    ]
   },
@@ -221,11 +221,11 @@
    "min": 50,
    "max": 80,
    "unit": "kg",
-   "date": "2026-11-23",
+   "date": "2026-11-24",
    "source": "TCB",
    "week": [
     50,
-    90
+    80
    ],
    "month": [
     60,
@@ -366,7 +366,7 @@
    "min": 100,
    "max": 150,
    "unit": "kg",
-   "date": "2026-11-23",
+   "date": "2026-11-24",
    "source": "TCB",
    "week": [
     120,
@@ -385,7 +385,7 @@
    "min": 100,
    "max": 140,
    "unit": "kg",
-   "date": "2026-11-23",
+   "date": "2026-11-24",
    "source": "TCB",
    "week": [
     100,
@@ -393,7 +393,7 @@
    ],
    "month": [
     100,
-    140
+    120
    ],
    "year": [
     80,
@@ -404,7 +404,7 @@
    "min": 20,
    "max": 30,
    "unit": "hali",
-   "date": "2026-11-23",
+   "date": "2026-11-24",
    "source": "TCB",
    "week": [
     20,
@@ -531,7 +531,7 @@
    "min": 350,
    "max": 550,
    "unit": "kg",
-   "date": "2026-11-23",
+   "date": "2026-11-24",
    "source": "TCB",
    "week": [
     350,
